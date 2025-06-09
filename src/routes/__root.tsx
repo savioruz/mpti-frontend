@@ -3,15 +3,18 @@ import {TanStackRouterDevtools} from '@tanstack/react-router-devtools'
 
 import Header from '../components/common/header.tsx'
 import {ThemeProvider} from "@/components/ui/theme-provider.tsx";
+import {Footer} from "@/components/ui/footer.tsx";
 
 export const Route = createRootRoute({
     component: () => (
         <>
-            <main className="flex flex-col container mx-auto">
+            <main className="flex flex-col min-h-screen">
                 <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
                     <Header/>
-
-                    <Outlet/>
+                    <div className="flex-1">
+                        <Outlet/>
+                    </div>
+                    <Footer/>
                     <TanStackRouterDevtools/>
                 </ThemeProvider>
             </main>
