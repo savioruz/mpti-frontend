@@ -3,7 +3,6 @@ import {TanStackRouterDevtools} from '@tanstack/react-router-devtools'
 
 import Header from '../components/common/header.tsx'
 import {ThemeProvider} from "@/components/ui/theme-provider.tsx";
-import {Footer} from "@/components/ui/footer.tsx";
 
 export const Route = createRootRoute({
     component: () => (
@@ -14,7 +13,6 @@ export const Route = createRootRoute({
                     <div className="flex-1">
                         <Outlet/>
                     </div>
-                    <Footer/>
                     <TanStackRouterDevtools/>
                 </ThemeProvider>
             </main>
