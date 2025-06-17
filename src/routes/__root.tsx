@@ -3,19 +3,22 @@ import {TanStackRouterDevtools} from '@tanstack/react-router-devtools'
 
 import Header from '../components/common/header.tsx'
 import {ThemeProvider} from "@/components/ui/theme-provider.tsx";
+import {Toaster} from "@/components/ui/sonner.tsx";
 
 export const Route = createRootRoute({
     component: () => (
         <>
-            <main className="flex flex-col min-h-screen">
-                <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+            <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+                <main className="flex flex-col container mx-auto">
                     <Header/>
-                    <div className="flex-1">
-                        <Outlet/>
-                    </div>
+                    <Outlet/>
                     <TanStackRouterDevtools/>
-                </ThemeProvider>
-            </main>
+                </main>
+                <Toaster
+                    position="top-right"
+                    richColors={true}
+                />
+            </ThemeProvider>
         </>
     ),
     errorComponent: () => (

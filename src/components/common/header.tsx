@@ -11,9 +11,12 @@ import {
     DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu.tsx"
 import {publicLinks} from "@/lib/link.ts";
+import { useCheckAuthStatus } from "@/lib/auth.ts";
+import { ProfileDropdown } from "@/components/common/profile-dropdown.tsx";
 
 export default function Header() {
     const [isMobile, setIsMobile] = useState(false)
+    const { data: authStatus, isLoading: isAuthLoading } = useCheckAuthStatus()
 
     useEffect(() => {
         const checkIfMobile = () => {
@@ -29,14 +32,14 @@ export default function Header() {
 
     return (
         <header
-            className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <nav className="container mx-auto flex h-14 items-center justify-between px-4 md:px-8">
-                <div className="flex items-center">
-                    <Link to="/" className="text-lg font-bold">Alkidi</Link>
+            className="border-b bg-background/95 px-4 md:px-8 py-1 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <nav className="container flex h-14 items-center justify-between">
+                <div className="flex items-center md:gap-6">
+                    <Link to="/" className="text-md font-bold md:text-lg">Alkidi</Link>
                 </div>
 
                 {!isMobile && (
-                    <div className="flex flex-1 items-center justify-center gap-6">
+                    <div className="flex items-center gap-4">
                         {publicNavLink.map(link => (
                             <Link
                                 key={link.to}
@@ -49,12 +52,20 @@ export default function Header() {
                     </div>
                 )}
 
-                <div className="flex items-center gap-2 md:gap-4">
-                    <Link to={publicLinks.login.to}>
-                        <Button size="icon" variant="outline">
-                            <LogIn size={20}/>
+                <div className="flex items-center gap-2 md:gap-4 z-20">
+                    {isAuthLoading ? (
+                        <Button disabled size="icon" variant="outline">
+                            <span className="animate-spin">⣾</span>
                         </Button>
-                    </Link>
+                    ) : authStatus?.isAuthenticated ? (
+                        <ProfileDropdown />
+                    ) : (
+                        <Link to={publicLinks.login.to}>
+                            <Button size="icon" variant="outline">
+                                <LogIn size={20}/>
+                            </Button>
+                        </Link>
+                    )}
 
                     <ModeToggle/>
 
