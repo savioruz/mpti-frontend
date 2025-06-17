@@ -205,6 +205,62 @@ export const isTokenExpired = (token?: string | null): boolean => {
   }
 };
 
+// RBAC Types
+export enum UserRole {
+  USER = "1",
+  ADMIN = "9",
+}
+
+export interface JWTPayload {
+  id: string;
+  email: string;
+  level: string;
+  token_type: string;
+  iss: string;
+  sub: string;
+  exp: number;
+  nbf: number;
+  iat: number;
+}
+
+// Decode JWT token to get payload
+export const decodeToken = (token?: string | null): JWTPayload | null => {
+  if (!token) return null;
+
+  try {
+    const base64Payload = token.split('.')[1];
+    const payload = JSON.parse(atob(base64Payload));
+    return payload as JWTPayload;
+  } catch (error) {
+    console.error("Error decoding JWT token:", error);
+    return null;
+  }
+};
+
+// Get user role from token
+export const getUserRole = (): UserRole | null => {
+  const token = getAccessToken();
+  if (!token) return null;
+
+  const payload = decodeToken(token);
+  if (!payload) return null;
+
+  return payload.level as UserRole;
+};
+
+// Check if user has required role
+export const hasRole = (requiredRole: UserRole): boolean => {
+  const userRole = getUserRole();
+  if (!userRole) return false;
+
+  return parseInt(userRole) >= parseInt(requiredRole);
+};
+
+// Check if user is admin (level 2) or higher
+export const isAdmin = (): boolean => {
+  return hasRole(UserRole.ADMIN);
+};
+
 // Logout function
 export const logout = () => {
   clearAuthTokens();

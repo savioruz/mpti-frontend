@@ -58,8 +58,8 @@ function OAuthCallbackPage() {
         toast.dismiss(loadingToast);
         toast.success("Successfully logged in with Google!");
 
-        // Redirect to home page
-        navigate({ to: "/" });
+        // Redirect to dashboard instead of home page
+        navigate({ to: "/dashboard" });
       } catch (error) {
         toast.error("An unexpected error occurred during authentication");
         navigate({ to: "/auth/login" });

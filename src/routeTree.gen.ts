@@ -13,6 +13,7 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as TosImport } from './routes/tos'
 import { Route as IndexImport } from './routes/index'
+import { Route as DashboardIndexImport } from './routes/dashboard/index'
 import { Route as OauthCallbackImport } from './routes/oauth/callback'
 import { Route as AuthRegisterImport } from './routes/auth/register'
 import { Route as AuthLoginImport } from './routes/auth/login'
@@ -28,6 +29,12 @@ const TosRoute = TosImport.update({
 const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DashboardIndexRoute = DashboardIndexImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -88,6 +95,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OauthCallbackImport
       parentRoute: typeof rootRoute
     }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -99,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/oauth/callback': typeof OauthCallbackRoute
+  '/dashboard': typeof DashboardIndexRoute
 }
 
 export interface FileRoutesByTo {
@@ -107,6 +122,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/oauth/callback': typeof OauthCallbackRoute
+  '/dashboard': typeof DashboardIndexRoute
 }
 
 export interface FileRoutesById {
@@ -116,13 +132,26 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/oauth/callback': typeof OauthCallbackRoute
+  '/dashboard/': typeof DashboardIndexRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/tos' | '/auth/login' | '/auth/register' | '/oauth/callback'
+  fullPaths:
+    | '/'
+    | '/tos'
+    | '/auth/login'
+    | '/auth/register'
+    | '/oauth/callback'
+    | '/dashboard'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/tos' | '/auth/login' | '/auth/register' | '/oauth/callback'
+  to:
+    | '/'
+    | '/tos'
+    | '/auth/login'
+    | '/auth/register'
+    | '/oauth/callback'
+    | '/dashboard'
   id:
     | '__root__'
     | '/'
@@ -130,6 +159,7 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/oauth/callback'
+    | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 
@@ -139,6 +169,7 @@ export interface RootRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
   OauthCallbackRoute: typeof OauthCallbackRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
@@ -147,6 +178,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
   OauthCallbackRoute: OauthCallbackRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
 }
 
 export const routeTree = rootRoute
@@ -163,7 +195,8 @@ export const routeTree = rootRoute
         "/tos",
         "/auth/login",
         "/auth/register",
-        "/oauth/callback"
+        "/oauth/callback",
+        "/dashboard/"
       ]
     },
     "/": {
@@ -180,6 +213,9 @@ export const routeTree = rootRoute
     },
     "/oauth/callback": {
       "filePath": "oauth/callback.tsx"
+    },
+    "/dashboard/": {
+      "filePath": "dashboard/index.tsx"
     }
   }
 }

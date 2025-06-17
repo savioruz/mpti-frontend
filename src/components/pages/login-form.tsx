@@ -32,8 +32,8 @@ export function LoginForm({
         try {
             const response = await loginMutation.mutateAsync(loginData);
             saveAuthTokens(response.data.access_token, response.data.refresh_token);
-            toast.success("Login successfully");
-            navigate({ to: "/" });
+            toast.success("Login successful");
+            navigate({ to: "/dashboard" });
         } catch (error) {
             console.error("Login failed:", error);
             toast.error("Login failed. Please check your credentials.");
