@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { isAdmin, getAccessToken } from "@/lib/auth";
-import AdminDashboard from "@/components/pages/admin/admin-dashboard";
+import AdminDashboard from "@/components/pages/admin-dashboard";
 import UserDashboard from "@/components/pages/user-dashboard";
 
 export const Route = createFileRoute("/dashboard/")({
