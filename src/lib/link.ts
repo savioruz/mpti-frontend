@@ -25,13 +25,3 @@ export const publicLinks: Record<string, Link> = {
     register: { to: '/auth/register' },
     forgotPassword: { to: '/forgot-password' },
 }
-
-export const adminLinks: Record<string, Link> = {
-    dashboard: { to: '/admin/dashboard' },
-    locations: { to: '/admin/locations' },
-    locationCreate: { to: '/admin/locations/create' },
-    locationEdit: { to: '/admin/locations/edit' }, // untuk masa depan
-    locationList: { to: '/admin/locations/list' }, // untuk masa depan
-    users: { to: '/admin/users' },
-    analytics: { to: '/admin/analytics' },
-}
