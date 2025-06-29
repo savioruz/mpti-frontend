@@ -8,3 +8,5 @@ dist-ssr
 .vscode
 .idea
 bun.lockb
+
+routeTree.gen.ts
