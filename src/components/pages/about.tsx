@@ -1,17 +1,9 @@
 "use client";
 
-import { motion, useAnimation } from "framer-motion";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 import { Link } from "@tanstack/react-router";
-import { useEffect } from "react";
-import { ArrowRight } from "lucide-react";
-
-const ease = [0.16, 1, 0.3, 1];
 
 function HeroPill() {
-  const controls = useAnimation();
-
   return (
     <Link to="/" className="group">
       <motion.div
@@ -19,12 +11,9 @@ function HeroPill() {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeInOut" }}
-        onHoverStart={() => controls.start({ rotate: -10 })}
-        onHoverEnd={() => controls.start({ rotate: 0 })}
       >
         <motion.span
           className="transition-colors group-hover:text-primary"
-          animate={controls}
           transition={{ type: "spring", stiffness: 300, damping: 10 }}
         >
           🌟
