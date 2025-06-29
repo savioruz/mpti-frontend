@@ -27,9 +27,18 @@ API.interceptors.response.use(
     (response) => response,
     (error) => {
         if (axios.isAxiosError(error) && error.response?.status === 401) {
+          // Only redirect to login if we're on a protected page, not for public API calls
+          const currentPath = window.location.pathname;
+          const protectedPaths = ['/dashboard', '/admin'];
+          const isProtectedPage = protectedPaths.some(path => currentPath.startsWith(path));
+          
           clearAuthTokens();
-          window.location.href = publicLinks.login.to;
+          
+          if (isProtectedPage) {
+            window.location.href = publicLinks.login.to;
+          }
         }
+        return Promise.reject(error);
     }
 );
 
@@ -48,10 +57,18 @@ export const API_ROUTES = {
   fields: {
     list: `${API_BASE_URL}/fields`,
     details: (id: string) => `${API_BASE_URL}/fields/${id}`,
+    byLocation: (locationId: string) => `${API_BASE_URL}/locations/${locationId}/fields`,
   },
   locations: {
     list: `${API_BASE_URL}/locations`,
     details: (id: string) => `${API_BASE_URL}/locations/${id}`,
+  },
+  bookings: {
+    create: `${API_BASE_URL}/bookings`,
+    list: `${API_BASE_URL}/users/bookings`,
+    details: (id: string) => `${API_BASE_URL}/bookings/${id}`,
+    cancel: (id: string) => `${API_BASE_URL}/bookings/${id}/cancel`,
+    slots: `${API_BASE_URL}/bookings/slots`,
   },
   users: {
     profile: () => `${API_BASE_URL}/users/profile`,
