@@ -1,13 +1,18 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { HeroSection } from '@/components/pages/alkadi';
+import { FeaturesSection } from "@/components/pages/features";
+import { FAQSection } from "@/components/pages/faq";
+import { ServicesSection } from "@/components/pages/services";
+import Footer from "@/components/pages/footer";
 
 export const Route = createFileRoute('/')({
-  component: App,
-})
-
-function App() {
-  return (
-    <div className="container mx-auto px-4 md:px-8 py-6">
-      <h1 className="text-2xl">Hello world</h1>
-    </div>
-  )
-}
+  component: () => (
+    <>
+      <HeroSection />
+      <FeaturesSection />
+      <ServicesSection />
+      <FAQSection />
+      <Footer />
+    </>
+  ),
+});
