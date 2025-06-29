@@ -4,7 +4,7 @@ import AdminDashboard from "@/components/pages/admin/admin-dashboard";
 import UserDashboard from "@/components/pages/user-dashboard";
 
 export const Route = createFileRoute("/dashboard/")({
-  beforeLoad: async ({ }) => {
+  beforeLoad: async () => {
     const token = getAccessToken();
     if (!token) {
       throw redirect({

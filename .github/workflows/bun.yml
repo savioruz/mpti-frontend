@@ -35,8 +35,18 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Generate route tree for type checking
+        run: |
+          # Start dev server in background to generate route tree
+          timeout 20s bun run dev --port 5174 > /dev/null 2>&1 || true
+          # Verify route tree was generated
+          if [ ! -f "src/routeTree.gen.ts" ]; then
+            echo "Route tree generation failed"
+            exit 1
+          fi
+          
       - name: Run type checking
-        run: bun run tsc --noEmit
+        run: bun run typecheck
 
       #- name: Run tests
       #  run: bun run test

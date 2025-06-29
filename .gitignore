@@ -8,5 +8,6 @@ dist-ssr
 .vscode
 .idea
 bun.lockb
+.tanstack
 
 routeTree.gen.ts
