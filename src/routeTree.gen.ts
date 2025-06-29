@@ -15,6 +15,32 @@ import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as OauthCallbackRouteImport } from './routes/oauth/callback'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+// Import Routes
+
+import { Route as rootRoute } from './routes/__root'
+import { Route as VisionImport } from './routes/vision'
+import { Route as TosImport } from './routes/tos'
+import { Route as ServicesImport } from './routes/services'
+import { Route as LocationImport } from './routes/location'
+import { Route as FooterImport } from './routes/footer'
+import { Route as FieldsImport } from './routes/fields'
+import { Route as FeaturesImport } from './routes/features'
+import { Route as FaqImport } from './routes/faq'
+import { Route as ContactImport } from './routes/contact'
+import { Route as AboutImport } from './routes/about'
+import { Route as IndexImport } from './routes/index'
+import { Route as DashboardIndexImport } from './routes/dashboard/index'
+import { Route as OauthCallbackImport } from './routes/oauth/callback'
+import { Route as AuthRegisterImport } from './routes/auth/register'
+import { Route as AuthLoginImport } from './routes/auth/login'
+
+// Create/Update Routes
+
+const VisionRoute = VisionImport.update({
+  id: '/vision',
+  path: '/vision',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const TosRoute = TosRouteImport.update({
   id: '/tos',
@@ -22,6 +48,56 @@ const TosRoute = TosRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
+
+const ServicesRoute = ServicesImport.update({
+  id: '/services',
+  path: '/services',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const LocationRoute = LocationImport.update({
+  id: '/location',
+  path: '/location',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const FooterRoute = FooterImport.update({
+  id: '/footer',
+  path: '/footer',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const FieldsRoute = FieldsImport.update({
+  id: '/fields',
+  path: '/fields',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const FeaturesRoute = FeaturesImport.update({
+  id: '/features',
+  path: '/features',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const FaqRoute = FaqImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ContactRoute = ContactImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AboutRoute = AboutImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const IndexRoute = IndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
@@ -47,9 +123,132 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 
+// Populate the FileRoutesByPath interface
+
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutImport
+      parentRoute: typeof rootRoute
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactImport
+      parentRoute: typeof rootRoute
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqImport
+      parentRoute: typeof rootRoute
+    }
+    '/features': {
+      id: '/features'
+      path: '/features'
+      fullPath: '/features'
+      preLoaderRoute: typeof FeaturesImport
+      parentRoute: typeof rootRoute
+    }
+    '/fields': {
+      id: '/fields'
+      path: '/fields'
+      fullPath: '/fields'
+      preLoaderRoute: typeof FieldsImport
+      parentRoute: typeof rootRoute
+    }
+    '/footer': {
+      id: '/footer'
+      path: '/footer'
+      fullPath: '/footer'
+      preLoaderRoute: typeof FooterImport
+      parentRoute: typeof rootRoute
+    }
+    '/location': {
+      id: '/location'
+      path: '/location'
+      fullPath: '/location'
+      preLoaderRoute: typeof LocationImport
+      parentRoute: typeof rootRoute
+    }
+    '/services': {
+      id: '/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof ServicesImport
+      parentRoute: typeof rootRoute
+    }
+    '/tos': {
+      id: '/tos'
+      path: '/tos'
+      fullPath: '/tos'
+      preLoaderRoute: typeof TosImport
+      parentRoute: typeof rootRoute
+    }
+    '/vision': {
+      id: '/vision'
+      path: '/vision'
+      fullPath: '/vision'
+      preLoaderRoute: typeof VisionImport
+      parentRoute: typeof rootRoute
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/auth/register': {
+      id: '/auth/register'
+      path: '/auth/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthRegisterImport
+      parentRoute: typeof rootRoute
+    }
+    '/oauth/callback': {
+      id: '/oauth/callback'
+      path: '/oauth/callback'
+      fullPath: '/oauth/callback'
+      preLoaderRoute: typeof OauthCallbackImport
+      parentRoute: typeof rootRoute
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardIndexImport
+      parentRoute: typeof rootRoute
+    }
+  }
+}
+
+// Create and export the route tree
+
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
+  '/features': typeof FeaturesRoute
+  '/fields': typeof FieldsRoute
+  '/footer': typeof FooterRoute
+  '/location': typeof LocationRoute
+  '/services': typeof ServicesRoute
   '/tos': typeof TosRoute
+  '/vision': typeof VisionRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/oauth/callback': typeof OauthCallbackRoute
@@ -57,7 +256,16 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
+  '/features': typeof FeaturesRoute
+  '/fields': typeof FieldsRoute
+  '/footer': typeof FooterRoute
+  '/location': typeof LocationRoute
+  '/services': typeof ServicesRoute
   '/tos': typeof TosRoute
+  '/vision': typeof VisionRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/oauth/callback': typeof OauthCallbackRoute
@@ -66,7 +274,16 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
+  '/features': typeof FeaturesRoute
+  '/fields': typeof FieldsRoute
+  '/footer': typeof FooterRoute
+  '/location': typeof LocationRoute
+  '/services': typeof ServicesRoute
   '/tos': typeof TosRoute
+  '/vision': typeof VisionRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/oauth/callback': typeof OauthCallbackRoute
@@ -76,7 +293,16 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
+    | '/contact'
+    | '/faq'
+    | '/features'
+    | '/fields'
+    | '/footer'
+    | '/location'
+    | '/services'
     | '/tos'
+    | '/vision'
     | '/auth/login'
     | '/auth/register'
     | '/oauth/callback'
@@ -84,7 +310,16 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
+    | '/contact'
+    | '/faq'
+    | '/features'
+    | '/fields'
+    | '/footer'
+    | '/location'
+    | '/services'
     | '/tos'
+    | '/vision'
     | '/auth/login'
     | '/auth/register'
     | '/oauth/callback'
@@ -92,7 +327,16 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/about'
+    | '/contact'
+    | '/faq'
+    | '/features'
+    | '/fields'
+    | '/footer'
+    | '/location'
+    | '/services'
     | '/tos'
+    | '/vision'
     | '/auth/login'
     | '/auth/register'
     | '/oauth/callback'
@@ -101,7 +345,16 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  ContactRoute: typeof ContactRoute
+  FaqRoute: typeof FaqRoute
+  FeaturesRoute: typeof FeaturesRoute
+  FieldsRoute: typeof FieldsRoute
+  FooterRoute: typeof FooterRoute
+  LocationRoute: typeof LocationRoute
+  ServicesRoute: typeof ServicesRoute
   TosRoute: typeof TosRoute
+  VisionRoute: typeof VisionRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
   OauthCallbackRoute: typeof OauthCallbackRoute
@@ -157,7 +410,16 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  ContactRoute: ContactRoute,
+  FaqRoute: FaqRoute,
+  FeaturesRoute: FeaturesRoute,
+  FieldsRoute: FieldsRoute,
+  FooterRoute: FooterRoute,
+  LocationRoute: LocationRoute,
+  ServicesRoute: ServicesRoute,
   TosRoute: TosRoute,
+  VisionRoute: VisionRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
   OauthCallbackRoute: OauthCallbackRoute,
@@ -166,3 +428,75 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+/* ROUTE_MANIFEST_START
+{
+  "routes": {
+    "__root__": {
+      "filePath": "__root.tsx",
+      "children": [
+        "/",
+        "/about",
+        "/contact",
+        "/faq",
+        "/features",
+        "/fields",
+        "/footer",
+        "/location",
+        "/services",
+        "/tos",
+        "/vision",
+        "/auth/login",
+        "/auth/register",
+        "/oauth/callback",
+        "/dashboard/"
+      ]
+    },
+    "/": {
+      "filePath": "index.tsx"
+    },
+    "/about": {
+      "filePath": "about.tsx"
+    },
+    "/contact": {
+      "filePath": "contact.tsx"
+    },
+    "/faq": {
+      "filePath": "faq.tsx"
+    },
+    "/features": {
+      "filePath": "features.tsx"
+    },
+    "/fields": {
+      "filePath": "fields.tsx"
+    },
+    "/footer": {
+      "filePath": "footer.tsx"
+    },
+    "/location": {
+      "filePath": "location.tsx"
+    },
+    "/services": {
+      "filePath": "services.tsx"
+    },
+    "/tos": {
+      "filePath": "tos.tsx"
+    },
+    "/vision": {
+      "filePath": "vision.tsx"
+    },
+    "/auth/login": {
+      "filePath": "auth/login.tsx"
+    },
+    "/auth/register": {
+      "filePath": "auth/register.tsx"
+    },
+    "/oauth/callback": {
+      "filePath": "oauth/callback.tsx"
+    },
+    "/dashboard/": {
+      "filePath": "dashboard/index.tsx"
+    }
+  }
+}
+ROUTE_MANIFEST_END */
