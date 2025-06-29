@@ -130,7 +130,7 @@ export const ContactSection = () => {
                   <FormField
                     control={form.control}
                     name="lastName"
-                    render={({ field }) => (
+                    render={({ field }: { field: any }) => (
                       <FormItem className="w-full">
                         <FormLabel>Last Name</FormLabel>
                         <FormControl>

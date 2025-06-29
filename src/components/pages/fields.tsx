@@ -32,7 +32,7 @@ const FormSchema = z.object({
 
 export function DatetimePickerV1() {
   const [isOpen, setIsOpen] = useState(false);
-  const [date, setDate] = useState<Date | null>(new Date());
+  const [, setDate] = useState<Date | null>(new Date());
   const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
 
   const form = useForm<z.infer<typeof FormSchema>>({
