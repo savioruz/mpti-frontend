@@ -24,7 +24,6 @@ import { toast } from "sonner";
 
 import { getAllFields, type Field } from "@/lib/field";
 import { createBooking, getBookedSlots, type BookedSlot } from "@/lib/booking";
-import "@/lib/test-auth"; // Auto-setup test auth in development
 
 const FormSchema = z.object({
   field_id: z.string().min(1, "Please select a field!"),
