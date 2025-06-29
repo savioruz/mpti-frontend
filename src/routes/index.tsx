@@ -5,7 +5,7 @@ import { FAQSection } from "@/components/pages/faq";
 import { ServicesSection } from "@/components/pages/services";
 import Footer from "@/components/pages/footer";
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   component: () => (
     <>
       <HeroSection />

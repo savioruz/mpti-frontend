@@ -6,6 +6,8 @@
     "dev": "vite --port 5173",
     "start": "vite --port 5173",
     "build": "vite build && tsc",
+    "generate-routes": "vite build --ssr --outDir temp-build && rm -rf temp-build",
+    "typecheck": "tsc --noEmit",
     "serve": "vite preview",
     "test": "vitest run"
   },
