@@ -36,8 +36,7 @@ interface PaymentConfirmationProps {
 export const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
   paymentInfo,
   bookingInfo,
-  onClose,
-  onPaymentComplete
+  onClose
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
 

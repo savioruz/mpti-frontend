@@ -9,7 +9,7 @@ import { getUserRole, type JWTPayload, decodeToken, getAccessToken } from "@/lib
 import { getUserBookings, cancelBooking, type BookingResponse } from "@/lib/booking";
 import { getField, type Field } from "@/lib/field";
 import { getLocationById, type Location } from "@/lib/location";
-import { PaymentStatusBadge, PaymentSummary } from "@/components/payment/payment-status";
+import { PaymentStatusBadge } from "@/components/payment/payment-status";
 import { type PaymentStatus } from "@/lib/payment";
 
 const UserDashboard: React.FC = () => {
@@ -47,14 +47,13 @@ const UserDashboard: React.FC = () => {
           
           details[booking.id] = { field, location };
         } catch (error) {
-          console.error(`Error loading details for booking ${booking.id}:`, error);
+          // Skip if unable to load details for this booking
         }
       }
       
       setBookingDetails(details);
     } catch (error: any) {
       toast.error(error.message || "Failed to load bookings");
-      console.error("Error loading bookings:", error);
     } finally {
       setLoading(prev => ({ ...prev, bookings: false }));
     }
@@ -75,7 +74,6 @@ const UserDashboard: React.FC = () => {
       });
     } catch (error: any) {
       toast.error(error.message || "Failed to cancel booking");
-      console.error("Error cancelling booking:", error);
     } finally {
       setLoading(prev => ({ ...prev, canceling: "" }));
     }

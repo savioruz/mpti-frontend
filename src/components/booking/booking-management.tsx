@@ -51,13 +51,12 @@ const BookingManagement: React.FC = () => {
           
           details[booking.id] = { field, location };
         } catch (error) {
-          console.error(`Error loading details for booking ${booking.id}:`, error);
+          // Skip if unable to load details for this booking
         }
       }
       
       setBookingDetails(details);
     } catch (error: any) {
-      console.error('Error loading bookings:', error);
       toast.error('Failed to load bookings');
     } finally {
       setLoading(prev => ({ ...prev, bookings: false }));
@@ -79,14 +78,13 @@ const BookingManagement: React.FC = () => {
         )
       );
     } catch (error: any) {
-      console.error('Error cancelling booking:', error);
       toast.error('Failed to cancel booking');
     } finally {
       setLoading(prev => ({ ...prev, canceling: "" }));
     }
   };
 
-  const handlePayNow = (bookingId: string, paymentUrl: string) => {
+  const handlePayNow = (paymentUrl: string) => {
     // Open payment URL in a new tab
     window.open(paymentUrl, '_blank');
     

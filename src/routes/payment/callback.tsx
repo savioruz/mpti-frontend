@@ -11,8 +11,6 @@ function PaymentCallback() {
     // Get URL parameters
     const urlParams = new URLSearchParams(window.location.search)
     const status = urlParams.get('status')
-    const orderId = urlParams.get('order_id')
-    const amount = urlParams.get('amount')
 
     // Handle different payment statuses
     if (status === 'success') {

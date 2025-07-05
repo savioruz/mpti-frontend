@@ -1,7 +1,7 @@
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, Clock, CreditCard, AlertCircle, CheckCircle } from 'lucide-react';
+import { Clock, CreditCard, AlertCircle, CheckCircle } from 'lucide-react';
 import { formatCurrency, getPaymentStatusColor, getPaymentStatusText, type PaymentStatus } from '@/lib/payment';
 
 interface PaymentStatusProps {

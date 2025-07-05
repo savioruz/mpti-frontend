@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, MapPin, CreditCard } from 'lucide-react';
 import { format } from 'date-fns';
@@ -14,7 +14,7 @@ interface BookingCardProps {
   field?: Field;
   location?: Location;
   onCancelBooking?: (bookingId: string) => void;
-  onPayNow?: (bookingId: string, paymentUrl: string) => void;
+  onPayNow?: (paymentUrl: string) => void;
   isCanceling?: boolean;
   className?: string;
 }
@@ -54,7 +54,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
 
   const handlePayNow = () => {
     if (booking.payment_url && onPayNow) {
-      onPayNow(booking.id, booking.payment_url);
+      onPayNow(booking.payment_url);
     }
   };
 

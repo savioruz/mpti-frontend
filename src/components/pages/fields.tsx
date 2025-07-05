@@ -25,8 +25,7 @@ import { toast } from "sonner";
 import { getAllFields, type Field } from "@/lib/field";
 import { createBooking, getBookedSlots, type BookedSlot } from "@/lib/booking";
 import { PaymentConfirmation, type PaymentInfo, type BookingInfo } from "@/components/payment/payment-confirmation";
-import { formatCurrency } from "@/lib/payment";
-import { getLocationById, type Location } from "@/lib/location";
+import { getLocationById } from "@/lib/location";
 import { getCurrentDateString, generateDateOptions } from "@/lib/date-utils";
 
 const FormSchema = z.object({
@@ -63,12 +62,9 @@ export function DatetimePickerV1() {
     const loadAllFields = async () => {
       setLoading(prev => ({ ...prev, fields: true }));
       try {
-        console.log("Loading all fields...");
         const response = await getAllFields({ limit: 100 });
-        console.log("Fields response:", response);
         setFields(response.data.fields);
       } catch (error: any) {
-        console.error("Error loading fields:", error);
         if (error.message?.includes("Authentication required")) {
           toast.error("Please log in to view available fields");
         } else {
@@ -101,7 +97,6 @@ export function DatetimePickerV1() {
           form.setValue("time_end", "");
         } catch (error) {
           toast.error("Failed to load booked slots");
-          console.error("Error loading booked slots:", error);
         } finally {
           setLoading(prev => ({ ...prev, slots: false }));
         }
@@ -143,7 +138,7 @@ export function DatetimePickerV1() {
           const locationResponse = await getLocationById(selectedField.location_id);
           locationName = locationResponse.data.name;
         } catch (error) {
-          console.error('Error getting location:', error);
+          // Use default location name if unable to fetch
         }
       }
       
@@ -186,7 +181,6 @@ export function DatetimePickerV1() {
       
     } catch (error: any) {
       toast.error(error.message || "Failed to create booking");
-      console.error("Error creating booking:", error);
     } finally {
       setLoading(prev => ({ ...prev, booking: false }));
     }
@@ -354,7 +348,6 @@ export function DatetimePickerV1() {
                           dateOption.isToday && "ring-2 ring-green-200" // Highlight today's date
                         )}
                         onClick={() => {
-                          console.log("Date selected:", dateOption.value, "Is today:", dateOption.isToday);
                           field.onChange(dateOption.value);
                         }}
                       >

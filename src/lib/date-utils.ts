@@ -1,9 +1,6 @@
-// Utility functions for date handling with UTC+7 timezone (Indonesia)
-
 export function getCurrentDateString(): string {
-  // Create date in UTC+7 timezone
   const now = new Date();
-  const utc7Date = new Date(now.getTime() + (7 * 60 * 60 * 1000)); // Add 7 hours
+  const utc7Date = new Date(now.getTime() + (7 * 60 * 60 * 1000));
   const year = utc7Date.getUTCFullYear();
   const month = (utc7Date.getUTCMonth() + 1).toString().padStart(2, '0');
   const day = utc7Date.getUTCDate().toString().padStart(2, '0');
@@ -11,7 +8,6 @@ export function getCurrentDateString(): string {
 }
 
 export function formatDateToYYYYMMDD(date: Date): string {
-  // Convert to UTC+7 timezone
   const utc7Date = new Date(date.getTime() + (7 * 60 * 60 * 1000));
   const year = utc7Date.getUTCFullYear();
   const month = (utc7Date.getUTCMonth() + 1).toString().padStart(2, '0');
