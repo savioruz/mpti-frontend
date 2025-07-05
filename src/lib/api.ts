@@ -73,4 +73,8 @@ export const API_ROUTES = {
   users: {
     profile: () => `${API_BASE_URL}/users/profile`,
   },
+  payments: {
+    callbacks: `${API_BASE_URL}/payments/callbacks`,
+    details: (id: string) => `${API_BASE_URL}/payments/${id}`,
+  },
 };

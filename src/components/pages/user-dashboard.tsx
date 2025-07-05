@@ -9,6 +9,8 @@ import { getUserRole, type JWTPayload, decodeToken, getAccessToken } from "@/lib
 import { getUserBookings, cancelBooking, type BookingResponse } from "@/lib/booking";
 import { getField, type Field } from "@/lib/field";
 import { getLocationById, type Location } from "@/lib/location";
+import { PaymentStatusBadge, PaymentSummary } from "@/components/payment/payment-status";
+import { type PaymentStatus } from "@/lib/payment";
 
 const UserDashboard: React.FC = () => {
   const [bookings, setBookings] = useState<BookingResponse[]>([]);
@@ -87,13 +89,15 @@ const UserDashboard: React.FC = () => {
   };
 
   const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'confirmed':
+    switch (status) {
+      case 'CONFIRMED':
         return 'bg-green-100 text-green-800';
-      case 'pending':
+      case 'PENDING':
         return 'bg-yellow-100 text-yellow-800';
-      case 'cancelled':
+      case 'CANCELLED':
         return 'bg-red-100 text-red-800';
+      case 'COMPLETED':
+        return 'bg-blue-100 text-blue-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -187,6 +191,18 @@ const UserDashboard: React.FC = () => {
                             </span>
                           </div>
                           
+                          {/* Payment Status */}
+                          {booking.payment_status && (
+                            <div className="mt-2">
+                              <PaymentStatusBadge
+                                status={booking.payment_status as PaymentStatus}
+                                amount={booking.total_price}
+                                paymentUrl={booking.payment_url}
+                                showPayButton={booking.payment_status === "PENDING"}
+                              />
+                            </div>
+                          )}
+                          
                           {details?.field?.description && (
                             <p className="text-sm text-gray-600 mt-2">
                               {details.field.description}
@@ -194,7 +210,7 @@ const UserDashboard: React.FC = () => {
                           )}
                         </div>
                         
-                        {booking.status.toLowerCase() !== 'cancelled' && (
+                        {booking.status !== 'CANCELLED' && (
                           <Button
                             variant="outline"
                             size="sm"

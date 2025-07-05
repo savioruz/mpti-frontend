@@ -24,6 +24,10 @@ import { toast } from "sonner";
 
 import { getAllFields, type Field } from "@/lib/field";
 import { createBooking, getBookedSlots, type BookedSlot } from "@/lib/booking";
+import { PaymentConfirmation, type PaymentInfo, type BookingInfo } from "@/components/payment/payment-confirmation";
+import { formatCurrency } from "@/lib/payment";
+import { getLocationById, type Location } from "@/lib/location";
+import { getCurrentDateString, generateDateOptions } from "@/lib/date-utils";
 
 const FormSchema = z.object({
   field_id: z.string().min(1, "Please select a field!"),
@@ -36,6 +40,8 @@ export function DatetimePickerV1() {
   const [fields, setFields] = useState<Field[]>([]);
   const [selectedField, setSelectedField] = useState<Field | null>(null);
   const [bookedSlots, setBookedSlots] = useState<BookedSlot[]>([]);
+  const [paymentInfo, setPaymentInfo] = useState<PaymentInfo | null>(null);
+  const [bookingInfo, setBookingInfo] = useState<BookingInfo | null>(null);
   const [loading, setLoading] = useState({
     fields: false,
     booking: false,
@@ -46,7 +52,7 @@ export function DatetimePickerV1() {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       field_id: "",
-      date: "",
+      date: getCurrentDateString(), // Use utility function for current date
       time_start: "",
       time_end: "",
     },
@@ -116,21 +122,54 @@ export function DatetimePickerV1() {
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setLoading(prev => ({ ...prev, booking: true }));
+    
     try {
       // Calculate duration in hours from start and end time
       const startHour = parseInt(data.time_start.split(':')[0]);
       const endHour = parseInt(data.time_end.split(':')[0]);
       const duration = endHour - startHour;
       
-      await createBooking({
+      const bookingResponse = await createBooking({
         field_id: data.field_id,
         date: data.date,
         start_time: data.time_start,
         duration: duration,
       });
       
+      // Get location information for the confirmation modal
+      let locationName = 'Unknown Location';
+      if (selectedField?.location_id) {
+        try {
+          const locationResponse = await getLocationById(selectedField.location_id);
+          locationName = locationResponse.data.name;
+        } catch (error) {
+          console.error('Error getting location:', error);
+        }
+      }
+      
+      // Set payment information for the confirmation modal
+      setPaymentInfo({
+        id: bookingResponse.data.id,
+        order_id: bookingResponse.data.order_id,
+        amount: bookingResponse.data.amount,
+        status: bookingResponse.data.status,
+        expiry_date: bookingResponse.data.expiry_date,
+        payment_url: bookingResponse.data.payment_url,
+      });
+      
+      // Set booking information for the confirmation modal
+      setBookingInfo({
+        field_name: selectedField?.name || 'Unknown Field',
+        location_name: locationName,
+        date: data.date,
+        start_time: data.time_start,
+        end_time: data.time_end,
+        duration: duration,
+        total_price: bookingResponse.data.amount,
+      });
+      
       toast.success(
-        `Successfully booked ${selectedField?.name} on ${data.date} from ${data.time_start} to ${data.time_end}`
+        `Booking created successfully! Please complete payment to confirm your booking.`
       );
       
       // Reset form
@@ -192,27 +231,7 @@ export function DatetimePickerV1() {
   const totalPrice = selectedField ? selectedField.price : 0;
 
   // Generate date options for the next 7 days only
-  const generateDateOptions = () => {
-    const dates = [];
-    const today = new Date();
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      dates.push({
-        value: date.toISOString().split('T')[0], // YYYY-MM-DD format
-        label: date.toLocaleDateString('en-US', { 
-          weekday: 'short', 
-          year: 'numeric', 
-          month: 'short', 
-          day: 'numeric' 
-        }),
-        shortLabel: date.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })
-      });
-    }
-    return dates;
-  };
-
-  const dateOptions = generateDateOptions();
+  const dateOptions = generateDateOptions(7);
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -331,13 +350,20 @@ export function DatetimePickerV1() {
                           "cursor-pointer transition-all hover:shadow-md",
                           field.value === dateOption.value 
                             ? "border-blue-500 bg-blue-50 shadow-md" 
-                            : "hover:border-gray-300"
+                            : "hover:border-gray-300",
+                          dateOption.isToday && "ring-2 ring-green-200" // Highlight today's date
                         )}
-                        onClick={() => field.onChange(dateOption.value)}
+                        onClick={() => {
+                          console.log("Date selected:", dateOption.value, "Is today:", dateOption.isToday);
+                          field.onChange(dateOption.value);
+                        }}
                       >
                         <CardContent className="p-3 text-center">
                           <div className="text-xs text-gray-500 mb-1">
                             {dateOption.shortLabel.split(' ')[0]}
+                            {dateOption.isToday && (
+                              <span className="text-green-600 font-medium ml-1">(Today)</span>
+                            )}
                           </div>
                           <div className="text-sm font-medium">
                             {dateOption.shortLabel.split(' ')[1]}
@@ -479,6 +505,23 @@ export function DatetimePickerV1() {
           )}
         </form>
       </Form>
+      
+      {/* Payment Confirmation Modal */}
+      {paymentInfo && bookingInfo && (
+        <PaymentConfirmation
+          paymentInfo={paymentInfo}
+          bookingInfo={bookingInfo}
+          onClose={() => {
+            setPaymentInfo(null);
+            setBookingInfo(null);
+          }}
+          onPaymentComplete={() => {
+            setPaymentInfo(null);
+            setBookingInfo(null);
+            // Optionally reload bookings or redirect
+          }}
+        />
+      )}
     </div>
   );
 }
