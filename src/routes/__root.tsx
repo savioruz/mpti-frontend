@@ -1,4 +1,4 @@
-import {createRootRoute, Outlet} from '@tanstack/react-router'
+import {createRootRoute, Outlet, useLocation} from '@tanstack/react-router'
 import {TanStackRouterDevtools} from '@tanstack/react-router-devtools'
 
 import Header from '../components/common/header.tsx'
@@ -6,21 +6,26 @@ import {ThemeProvider} from "@/components/ui/theme-provider.tsx";
 import {Toaster} from "@/components/ui/sonner.tsx";
 
 export const Route = createRootRoute({
-    component: () => (
-        <>
-            <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-                <main className="flex flex-col container mx-auto">
-                    <Header/>
-                    <Outlet/>
-                    <TanStackRouterDevtools/>
-                </main>
-                <Toaster
-                    position="top-right"
-                    richColors={true}
-                />
-            </ThemeProvider>
-        </>
-    ),
+    component: () => {
+        const location = useLocation()
+        const isAdminRoute = location.pathname.startsWith('/admin')
+        
+        return (
+            <>
+                <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+                    <main className={isAdminRoute ? "" : "flex flex-col container mx-auto"}>
+                        {!isAdminRoute && <Header/>}
+                        <Outlet/>
+                        <TanStackRouterDevtools/>
+                    </main>
+                    <Toaster
+                        position="top-right"
+                        richColors={true}
+                    />
+                </ThemeProvider>
+            </>
+        )
+    },
     errorComponent: () => (
         <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4">
             <h1 className="text-6xl font-bold mb-2">404</h1>
