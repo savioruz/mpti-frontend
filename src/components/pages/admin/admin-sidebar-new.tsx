@@ -9,15 +9,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
 } from "../../ui/sidebar";
-import { 
-  Home, 
-  Users, 
-  MapPin, 
-  Calendar, 
-  CreditCard, 
-  BarChart3,
-  Settings
-} from "lucide-react";
+import { Home, Users, BarChart, Building2} from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import React from "react";
 
@@ -46,38 +38,11 @@ const AdminSidebar: React.FC = () => (
 
       <SidebarMenu>
         <SidebarGroup>
-          <SidebarGroupLabel>Management</SidebarGroupLabel>
+          <SidebarGroupLabel>Master Data</SidebarGroupLabel>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link to="/admin/locations">
-                <MapPin className="mr-2" /> Locations
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link to="/admin/fields">
-                <Settings className="mr-2" /> 
-                <span className="flex items-center gap-2">
-                  Fields
-                  <span className="text-xs bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded">
-                    Maintenance
-                  </span>
-                </span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link to="/admin/bookings">
-                <Calendar className="mr-2" /> Bookings
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link to="/admin/users">
-                <Users className="mr-2" /> Users
+              <Link to="/admin/organizations">
+                <Building2 className="mr-2" /> Organization
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -86,12 +51,10 @@ const AdminSidebar: React.FC = () => (
 
       <SidebarMenu>
         <SidebarGroup>
-          <SidebarGroupLabel>Financial</SidebarGroupLabel>
+          <SidebarGroupLabel>Users</SidebarGroupLabel>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link to="/admin/payments">
-                <CreditCard className="mr-2" /> Payments
-              </Link>
+            <SidebarMenuButton>
+              <Users className="mr-2" /> User Management
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarGroup>
@@ -101,10 +64,8 @@ const AdminSidebar: React.FC = () => (
         <SidebarGroup>
           <SidebarGroupLabel>Reports</SidebarGroupLabel>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link to="/admin/analytics">
-                <BarChart3 className="mr-2" /> Analytics
-              </Link>
+            <SidebarMenuButton>
+              <BarChart className="mr-2" /> Analytics
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarGroup>
