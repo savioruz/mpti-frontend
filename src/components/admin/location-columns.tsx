@@ -49,7 +49,7 @@ function LocationTableActions({ location, onView, onEdit, onDelete, actionLoadin
         <DropdownMenuItem asChild>
           <AlertDialog>
             <AlertDialogTrigger className="w-full">
-              <div className="flex items-center text-destructive">
+              <div className="flex items-center px-2 py-1.5 text-sm text-destructive rounded-sm cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors">
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete
               </div>
