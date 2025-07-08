@@ -57,7 +57,21 @@ const BookingManagement: React.FC = () => {
       
       setBookingDetails(details);
     } catch (error: any) {
-      toast.error('Failed to load bookings');
+      let errorMessage = "Failed to load bookings";
+      
+      if (error.response?.status === 401) {
+        errorMessage = "Please log in to view your bookings";
+      } else if (error.response?.status === 403) {
+        errorMessage = "You don't have permission to view bookings";
+      } else if (error.response?.status >= 500) {
+        errorMessage = "Server error. Please try again later";
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(prev => ({ ...prev, bookings: false }));
     }
@@ -78,18 +92,32 @@ const BookingManagement: React.FC = () => {
         )
       );
     } catch (error: any) {
-      toast.error('Failed to cancel booking');
+      let errorMessage = "Failed to cancel booking";
+      
+      if (error.response?.status === 400) {
+        if (error.response?.data?.error) {
+          errorMessage = error.response.data.error;
+        } else if (error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        }
+      } else if (error.response?.status === 401) {
+        errorMessage = "Please log in to cancel bookings";
+      } else if (error.response?.status === 403) {
+        errorMessage = "You don't have permission to cancel this booking";
+      } else if (error.response?.status === 404) {
+        errorMessage = "Booking not found";
+      } else if (error.response?.status === 409) {
+        errorMessage = "This booking cannot be cancelled";
+      } else if (error.response?.status >= 500) {
+        errorMessage = "Server error. Please try again later";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(prev => ({ ...prev, canceling: "" }));
     }
-  };
-
-  const handlePayNow = (paymentUrl: string) => {
-    // Open payment URL in a new tab
-    window.open(paymentUrl, '_blank');
-    
-    // Show a toast to inform the user
-    toast.info('Payment page opened in a new tab. Please complete your payment there.');
   };
 
   const handleRefresh = async () => {
@@ -234,7 +262,6 @@ const BookingManagement: React.FC = () => {
               field={bookingDetails[booking.id]?.field}
               location={bookingDetails[booking.id]?.location}
               onCancelBooking={handleCancelBooking}
-              onPayNow={handlePayNow}
               isCanceling={loading.canceling === booking.id}
             />
           ))

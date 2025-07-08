@@ -4,6 +4,14 @@ import {publicLinks} from "@/lib/link.ts";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/v1';
 
+// Payment gateway configuration
+export const PAYMENT_GATEWAY_CONFIG = {
+  // Use environment variable for production, default to staging
+  xendit: {
+    checkoutUrl: import.meta.env.VITE_XENDIT_CHECKOUT_URL || 'https://checkout-staging.xendit.co/web',
+  },
+};
+
 export const API = axios.create({
     baseURL: API_BASE_URL,
     headers: {
@@ -76,5 +84,6 @@ export const API_ROUTES = {
   payments: {
     callbacks: `${API_BASE_URL}/payments/callbacks`,
     details: (id: string) => `${API_BASE_URL}/payments/${id}`,
+    byBooking: (bookingId: string) => `${API_BASE_URL}/payments/booking/${bookingId}`,
   },
 };

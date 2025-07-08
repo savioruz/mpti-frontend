@@ -5,6 +5,7 @@ export type CreateBookingRequest = {
   duration: number;
   field_id: string;
   start_time: string; // Format: "15:04"
+  cash: boolean;
 };
 
 export type BookingResponse = {
@@ -17,9 +18,6 @@ export type BookingResponse = {
   status: "PENDING" | "CONFIRMED" | "CANCELLED" | "COMPLETED";
   total_price: number;
   updated_at: string;
-  payment_status?: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "CANCELLED";
-  payment_url?: string;
-  payment_id?: string;
 };
 
 export type GetBookedSlotsRequest = {
@@ -54,7 +52,7 @@ export type GetBookingsParams = {
   page?: number;
 };
 
-export async function createBooking(payload: CreateBookingRequest): Promise<{ data: { id: string; order_id: string; amount: number; status: "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "CANCELLED"; expiry_date: string; payment_url: string; } }> {
+export async function createBooking(payload: CreateBookingRequest): Promise<{ data: string }> {
   const response = await API.post(API_ROUTES.bookings.create, payload);
   return response.data;
 }

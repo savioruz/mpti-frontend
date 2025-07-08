@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ExternalLink, Clock, CreditCard, AlertCircle, CheckCircle } from 'lucide-react';
+import { ExternalLink, Clock, CreditCard, AlertCircle, CheckCircle, Eye } from 'lucide-react';
 import { format } from 'date-fns';
+import { Link } from '@tanstack/react-router';
 import { formatCurrency, getPaymentStatusColor, getPaymentStatusText, type PaymentStatus } from '@/lib/payment';
 
 export type PaymentInfo = {
@@ -151,6 +152,12 @@ export const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
           <div className="flex gap-2">
             <Button variant="outline" onClick={onClose} className="flex-1">
               Close
+            </Button>
+            <Button asChild variant="outline" className="flex-1">
+              <Link to="/booking/$bookingId" params={{ bookingId: paymentInfo.id }}>
+                <Eye className="w-4 h-4 mr-2" />
+                View Details
+              </Link>
             </Button>
             {paymentInfo.status === "PENDING" && !isPaymentExpired && (
               <Button 

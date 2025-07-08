@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Clock } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from '@tanstack/react-router';
 import { z } from "zod";
 
 import { cn } from "@/lib/utils";
@@ -24,8 +25,6 @@ import { toast } from "sonner";
 
 import { getAllFields, type Field } from "@/lib/field";
 import { createBooking, getBookedSlots, type BookedSlot } from "@/lib/booking";
-import { PaymentConfirmation, type PaymentInfo, type BookingInfo } from "@/components/payment/payment-confirmation";
-import { getLocationById } from "@/lib/location";
 import { getCurrentDateString, generateDateOptions } from "@/lib/date-utils";
 
 const FormSchema = z.object({
@@ -36,11 +35,10 @@ const FormSchema = z.object({
 });
 
 export function DatetimePickerV1() {
+  const navigate = useNavigate();
   const [fields, setFields] = useState<Field[]>([]);
   const [selectedField, setSelectedField] = useState<Field | null>(null);
   const [bookedSlots, setBookedSlots] = useState<BookedSlot[]>([]);
-  const [paymentInfo, setPaymentInfo] = useState<PaymentInfo | null>(null);
-  const [bookingInfo, setBookingInfo] = useState<BookingInfo | null>(null);
   const [loading, setLoading] = useState({
     fields: false,
     booking: false,
@@ -129,43 +127,25 @@ export function DatetimePickerV1() {
         date: data.date,
         start_time: data.time_start,
         duration: duration,
+        cash: false, // Default to online payment
       });
       
-      // Get location information for the confirmation modal
-      let locationName = 'Unknown Location';
-      if (selectedField?.location_id) {
-        try {
-          const locationResponse = await getLocationById(selectedField.location_id);
-          locationName = locationResponse.data.name;
-        } catch (error) {
-          // Use default location name if unable to fetch
-        }
-      }
+      // Get the booking details to get payment information
+      const bookingId = typeof bookingResponse.data === 'string' 
+        ? bookingResponse.data 
+        : (bookingResponse.data as any)?.id || String(bookingResponse.data); // Handle different response formats
       
-      // Set payment information for the confirmation modal
-      setPaymentInfo({
-        id: bookingResponse.data.id,
-        order_id: bookingResponse.data.order_id,
-        amount: bookingResponse.data.amount,
-        status: bookingResponse.data.status,
-        expiry_date: bookingResponse.data.expiry_date,
-        payment_url: bookingResponse.data.payment_url,
-      });
-      
-      // Set booking information for the confirmation modal
-      setBookingInfo({
-        field_name: selectedField?.name || 'Unknown Field',
-        location_name: locationName,
-        date: data.date,
-        start_time: data.time_start,
-        end_time: data.time_end,
-        duration: duration,
-        total_price: bookingResponse.data.amount,
-      });
+      console.log('Booking response:', bookingResponse.data);
+      console.log('Extracted booking ID:', bookingId);
       
       toast.success(
-        `Booking created successfully! Please complete payment to confirm your booking.`
+        `Booking created successfully! Redirecting to booking details...`
       );
+      
+      // Navigate to booking details page instead of showing modal
+      setTimeout(() => {
+        navigate({ to: '/booking/$bookingId', params: { bookingId: String(bookingId) } });
+      }, 1500);
       
       // Reset form
       form.reset();
@@ -180,7 +160,30 @@ export function DatetimePickerV1() {
       }
       
     } catch (error: any) {
-      toast.error(error.message || "Failed to create booking");
+      let errorMessage = "Failed to create booking";
+      
+      if (error.response?.status === 400) {
+        // Handle validation and business logic errors
+        if (error.response?.data?.error) {
+          errorMessage = error.response.data.error;
+        } else if (error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        } else if (error.message?.toLowerCase().includes('validation')) {
+          errorMessage = error.message;
+        }
+      } else if (error.response?.status === 401) {
+        errorMessage = "Please log in to create a booking";
+      } else if (error.response?.status === 403) {
+        errorMessage = "You don't have permission to create bookings";
+      } else if (error.response?.status === 409) {
+        errorMessage = "This time slot is already booked";
+      } else if (error.response?.status >= 500) {
+        errorMessage = "Server error. Please try again later";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(prev => ({ ...prev, booking: false }));
     }
@@ -498,23 +501,6 @@ export function DatetimePickerV1() {
           )}
         </form>
       </Form>
-      
-      {/* Payment Confirmation Modal */}
-      {paymentInfo && bookingInfo && (
-        <PaymentConfirmation
-          paymentInfo={paymentInfo}
-          bookingInfo={bookingInfo}
-          onClose={() => {
-            setPaymentInfo(null);
-            setBookingInfo(null);
-          }}
-          onPaymentComplete={() => {
-            setPaymentInfo(null);
-            setBookingInfo(null);
-            // Optionally reload bookings or redirect
-          }}
-        />
-      )}
     </div>
   );
 }

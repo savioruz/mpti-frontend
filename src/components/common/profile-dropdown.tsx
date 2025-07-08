@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { LogOut, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useNavigate } from "@tanstack/react-router";
 
 interface ProfileDropdownProps {
   triggerContent?: React.ReactNode;
@@ -17,6 +18,7 @@ interface ProfileDropdownProps {
 
 export function ProfileDropdown({ triggerContent }: ProfileDropdownProps) {
   const { data: profile, isLoading } = useUserProfile();
+  const navigate = useNavigate();
 
   return (
     <DropdownMenu>
@@ -57,6 +59,14 @@ export function ProfileDropdown({ triggerContent }: ProfileDropdownProps) {
         </div>
 
         <DropdownMenuSeparator />
+
+        <DropdownMenuItem
+          className="cursor-pointer flex items-center gap-2"
+          onClick={() => navigate({ to: '/dashboard' })}
+        >
+          <User size={16} />
+          <span>Profile</span>
+        </DropdownMenuItem>
 
         <DropdownMenuItem
           className="cursor-pointer text-destructive focus:text-destructive flex items-center gap-2"

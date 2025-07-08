@@ -1,17 +1,19 @@
-import { API, API_ROUTES } from "@/lib/api";
+import { API, API_ROUTES, PAYMENT_GATEWAY_CONFIG } from "@/lib/api";
 
 export type PaymentStatus = "PENDING" | "PAID" | "FAILED" | "EXPIRED" | "CANCELLED";
 
 export type PaymentResponse = {
   id: string;
-  order_id: string;
-  amount: number;
-  status: PaymentStatus;
-  expiry_date: string;
-  payment_url: string;
+  booking_id: string;
+  created_at: string;
+  paid_at?: string;
+  payment_method: string;
+  payment_status: PaymentStatus;
+  transaction_id: string;
+  updated_at: string;
 };
 
-// Payment callback request structure (from Xendit webhook)
+// Payment callback request structure (from API webhook)
 export type PaymentCallbackRequest = {
   id: string;
   external_id: string;
@@ -38,31 +40,39 @@ export type PaymentCallbackRequest = {
 export type PaymentDetails = {
   id: string;
   booking_id: string;
-  amount: number;
-  status: PaymentStatus;
-  payment_url?: string;
-  external_id?: string;
+  payment_method: string;
+  payment_status: PaymentStatus;
+  transaction_id: string;
   created_at: string;
   updated_at: string;
   paid_at?: string;
-  expiry_date?: string;
 };
 
 // Payment is created automatically when booking is created
 // The booking API returns payment information directly
 
-export async function getPaymentStatus(paymentId: string): Promise<{ data: PaymentDetails }> {
-  const response = await API.get(`${API_ROUTES.payments.details(paymentId)}`);
+export async function getPaymentByBookingId(bookingId: string): Promise<{ data: PaymentResponse[] }> {
+  const response = await API.get(API_ROUTES.payments.byBooking(bookingId));
   return response.data;
 }
 
-export async function getBookingPayment(bookingId: string): Promise<{ data: PaymentDetails }> {
-  const response = await API.get(`${API_ROUTES.bookings.details(bookingId)}/payment`);
+export async function getPaymentById(paymentId: string): Promise<{ data: PaymentResponse }> {
+  const response = await API.get(API_ROUTES.payments.details(paymentId));
   return response.data;
 }
 
-export function redirectToPayment(paymentUrl: string): void {
+export function constructPaymentUrl(transactionId: string): string {
+  return `${PAYMENT_GATEWAY_CONFIG.xendit.checkoutUrl}/${transactionId}`;
+}
+
+export function redirectToPayment(transactionId: string): void {
+  const paymentUrl = constructPaymentUrl(transactionId);
   window.location.href = paymentUrl;
+}
+
+export function openPaymentInNewTab(transactionId: string): void {
+  const paymentUrl = constructPaymentUrl(transactionId);
+  window.open(paymentUrl, '_blank');
 }
 
 export function formatCurrency(amount: number): string {
@@ -85,7 +95,7 @@ export function getPaymentStatusColor(status: PaymentStatus): string {
     case "EXPIRED":
       return "bg-gray-100 text-gray-800 border-gray-300";
     case "CANCELLED":
-      return "bg-red-100 text-red-800 border-red-300";
+      return "bg-yellow-100 text-yellow-800 border-yellow-300";
     default:
       return "bg-gray-100 text-gray-800 border-gray-300";
   }

@@ -41,8 +41,8 @@ const AdminSidebar: React.FC = () => (
           <SidebarGroupLabel>Master Data</SidebarGroupLabel>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link to="/admin/organizations">
-                <Building2 className="mr-2" /> Organization
+              <Link to="/admin/locations">
+                <Building2 className="mr-2" /> Locations
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

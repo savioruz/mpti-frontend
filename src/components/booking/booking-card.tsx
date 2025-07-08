@@ -1,20 +1,19 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, MapPin, CreditCard } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Calendar, Clock, MapPin, Eye } from 'lucide-react';
 import { format } from 'date-fns';
-import { PaymentStatusBadge } from "@/components/payment/payment-status";
+import { Link } from '@tanstack/react-router';
 import { type BookingResponse } from "@/lib/booking";
 import { type Field } from "@/lib/field";
 import { type Location } from "@/lib/location";
-import { type PaymentStatus } from "@/lib/payment";
 
 interface BookingCardProps {
   booking: BookingResponse;
   field?: Field;
   location?: Location;
   onCancelBooking?: (bookingId: string) => void;
-  onPayNow?: (paymentUrl: string) => void;
   isCanceling?: boolean;
   className?: string;
 }
@@ -24,7 +23,6 @@ export const BookingCard: React.FC<BookingCardProps> = ({
   field,
   location,
   onCancelBooking,
-  onPayNow,
   isCanceling = false,
   className = ""
 }) => {
@@ -35,7 +33,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       case 'PENDING':
         return 'bg-yellow-100 text-yellow-800 border-yellow-300';
       case 'CANCELLED':
-        return 'bg-red-100 text-red-800 border-red-300';
+        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
       case 'COMPLETED':
         return 'bg-blue-100 text-blue-800 border-blue-300';
       default:
@@ -52,10 +50,11 @@ export const BookingCard: React.FC<BookingCardProps> = ({
     }).format(price);
   };
 
-  const handlePayNow = () => {
-    if (booking.payment_url && onPayNow) {
-      onPayNow(booking.payment_url);
-    }
+  // Helper function to determine if a booking can be canceled
+  const canCancelBooking = (status: string) => {
+    // Only allow cancellation for pending and confirmed bookings
+    const cancelableStatuses = ['PENDING', 'CONFIRMED'];
+    return cancelableStatuses.includes(status.toUpperCase());
   };
 
   return (
@@ -98,20 +97,6 @@ export const BookingCard: React.FC<BookingCardProps> = ({
               </span>
             </div>
             
-            {/* Payment Status */}
-            {booking.payment_status && (
-              <div className="flex items-center gap-2">
-                <CreditCard className="h-4 w-4 text-gray-500" />
-                <PaymentStatusBadge
-                  status={booking.payment_status as PaymentStatus}
-                  amount={booking.total_price}
-                  paymentUrl={booking.payment_url}
-                  showPayButton={booking.payment_status === "PENDING"}
-                  onPayNow={handlePayNow}
-                />
-              </div>
-            )}
-            
             {/* Field Description */}
             {field?.description && (
               <p className="text-sm text-gray-600 mt-2">
@@ -120,9 +105,15 @@ export const BookingCard: React.FC<BookingCardProps> = ({
             )}
           </div>
           
-          {/* Action Button */}
-          <div className="ml-4">
-            {booking.status !== 'CANCELLED' && onCancelBooking && (
+          {/* Action Buttons */}
+          <div className="ml-4 flex flex-col gap-2">
+            <Button asChild variant="outline" size="sm">
+              <Link to="/booking/$bookingId" params={{ bookingId: booking.id }}>
+                <Eye className="h-4 w-4 mr-2" />
+                View Details
+              </Link>
+            </Button>
+            {canCancelBooking(booking.status) && onCancelBooking && (
               <button
                 onClick={() => onCancelBooking(booking.id)}
                 disabled={isCanceling}

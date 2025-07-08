@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Calendar, Clock, MapPin, X } from 'lucide-react';
+import { Calendar, Clock, MapPin, X, Eye } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { Link } from '@tanstack/react-router';
 import { getUserRole, type JWTPayload, decodeToken, getAccessToken } from "@/lib/auth";
 import { getUserBookings, cancelBooking, type BookingResponse } from "@/lib/booking";
 import { getField, type Field } from "@/lib/field";
 import { getLocationById, type Location } from "@/lib/location";
-import { PaymentStatusBadge } from "@/components/payment/payment-status";
-import { type PaymentStatus } from "@/lib/payment";
 
 const UserDashboard: React.FC = () => {
   const [bookings, setBookings] = useState<BookingResponse[]>([]);
@@ -35,6 +34,9 @@ const UserDashboard: React.FC = () => {
       const response = await getUserBookings({ limit: 100 });
       setBookings(response.data.bookings);
       
+      // Debug: log the actual status values we're getting
+      console.log('Booking statuses:', response.data.bookings.map(b => ({ id: b.id, status: b.status })));
+      
       // Load field and location details for each booking
       const details: { [key: string]: { field: Field; location: Location } } = {};
       
@@ -53,7 +55,21 @@ const UserDashboard: React.FC = () => {
       
       setBookingDetails(details);
     } catch (error: any) {
-      toast.error(error.message || "Failed to load bookings");
+      let errorMessage = "Failed to load bookings";
+      
+      if (error.response?.status === 401) {
+        errorMessage = "Please log in to view your bookings";
+      } else if (error.response?.status === 403) {
+        errorMessage = "You don't have permission to view bookings";
+      } else if (error.response?.status >= 500) {
+        errorMessage = "Server error. Please try again later";
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(prev => ({ ...prev, bookings: false }));
     }
@@ -73,7 +89,29 @@ const UserDashboard: React.FC = () => {
         return updated;
       });
     } catch (error: any) {
-      toast.error(error.message || "Failed to cancel booking");
+      let errorMessage = "Failed to cancel booking";
+      
+      if (error.response?.status === 400) {
+        if (error.response?.data?.error) {
+          errorMessage = error.response.data.error;
+        } else if (error.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        }
+      } else if (error.response?.status === 401) {
+        errorMessage = "Please log in to cancel bookings";
+      } else if (error.response?.status === 403) {
+        errorMessage = "You don't have permission to cancel this booking";
+      } else if (error.response?.status === 404) {
+        errorMessage = "Booking not found";
+      } else if (error.response?.status === 409) {
+        errorMessage = "This booking cannot be cancelled";
+      } else if (error.response?.status >= 500) {
+        errorMessage = "Server error. Please try again later";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setLoading(prev => ({ ...prev, canceling: "" }));
     }
@@ -93,12 +131,22 @@ const UserDashboard: React.FC = () => {
       case 'PENDING':
         return 'bg-yellow-100 text-yellow-800';
       case 'CANCELLED':
-        return 'bg-red-100 text-red-800';
+        return 'bg-yellow-100 text-yellow-800';
       case 'COMPLETED':
         return 'bg-blue-100 text-blue-800';
+      case 'PAID':
+        return 'bg-green-100 text-green-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  // Helper function to determine if a booking can be canceled
+  const canCancelBooking = (status: string) => {
+    // Only allow cancellation for pending and confirmed bookings
+    // Do not allow cancellation for paid, completed, or already cancelled bookings
+    const cancelableStatuses = ['PENDING', 'CONFIRMED'];
+    return cancelableStatuses.includes(status.toUpperCase());
   };
 
   return (
@@ -189,18 +237,6 @@ const UserDashboard: React.FC = () => {
                             </span>
                           </div>
                           
-                          {/* Payment Status */}
-                          {booking.payment_status && (
-                            <div className="mt-2">
-                              <PaymentStatusBadge
-                                status={booking.payment_status as PaymentStatus}
-                                amount={booking.total_price}
-                                paymentUrl={booking.payment_url}
-                                showPayButton={booking.payment_status === "PENDING"}
-                              />
-                            </div>
-                          )}
-                          
                           {details?.field?.description && (
                             <p className="text-sm text-gray-600 mt-2">
                               {details.field.description}
@@ -208,24 +244,32 @@ const UserDashboard: React.FC = () => {
                           )}
                         </div>
                         
-                        {booking.status !== 'CANCELLED' && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleCancelBooking(booking.id)}
-                            disabled={loading.canceling === booking.id}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          >
-                            {loading.canceling === booking.id ? (
-                              "Cancelling..."
-                            ) : (
-                              <>
-                                <X className="h-4 w-4 mr-1" />
-                                Cancel
-                              </>
-                            )}
+                        <div className="flex flex-col gap-2">
+                          <Button asChild variant="outline" size="sm">
+                            <Link to="/booking/$bookingId" params={{ bookingId: booking.id }}>
+                              <Eye className="h-4 w-4 mr-2" />
+                              View Details
+                            </Link>
                           </Button>
-                        )}
+                          {canCancelBooking(booking.status) && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleCancelBooking(booking.id)}
+                              disabled={loading.canceling === booking.id}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            >
+                              {loading.canceling === booking.id ? (
+                                "Cancelling..."
+                              ) : (
+                                <>
+                                  <X className="h-4 w-4 mr-1" />
+                                  Cancel
+                                </>
+                              )}
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
