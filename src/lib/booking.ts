@@ -14,8 +14,9 @@ export type BookingResponse = {
   created_at: string;
   end_time: string;
   field_id: string;
+  field_name?: string; // Optional for backward compatibility
   start_time: string;
-  status: "PENDING" | "CONFIRMED" | "CANCELLED" | "COMPLETED";
+  status: "PENDING" | "EXPIRED" | "CANCELLED";
   total_price: number;
   updated_at: string;
 };
@@ -65,6 +66,30 @@ export async function getBookedSlots(payload: GetBookedSlotsRequest): Promise<Ge
 export async function getUserBookings(params?: GetBookingsParams): Promise<GetBookingsResponse> {
   const response = await API.get(API_ROUTES.bookings.list, { params });
   return response.data;
+}
+
+export type AdminBookingsResponse = GetBookingsResponse & {
+  isAdminEndpoint?: boolean;
+};
+
+// Admin function to get all bookings - tries admin endpoint first, falls back to user endpoint
+export async function getAdminBookings(params?: GetBookingsParams): Promise<AdminBookingsResponse> {
+  try {
+    // First try GET /bookings/ for admin to get all bookings
+    const response = await API.get(API_ROUTES.bookings.adminList, { params });
+    return {
+      ...response.data,
+      isAdminEndpoint: true
+    };
+  } catch (error) {
+    // If admin endpoint doesn't exist or fails, fall back to user bookings endpoint
+    console.warn('Admin bookings endpoint (GET /bookings/) not available or failed, falling back to user bookings');
+    const response = await API.get(API_ROUTES.bookings.list, { params });
+    return {
+      ...response.data,
+      isAdminEndpoint: false
+    };
+  }
 }
 
 export async function getBookingById(id: string): Promise<{ data: BookingResponse }> {

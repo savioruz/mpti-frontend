@@ -328,7 +328,7 @@ export const BookingDetails: React.FC = () => {
           <Button variant="outline" onClick={() => navigate({ to: '/bookings' })}>
             View All Bookings
           </Button>
-          {booking.status !== 'CANCELLED' && booking.status !== 'COMPLETED' && (
+          {booking.status !== 'CANCELLED' && (
             <Button variant="outline" onClick={() => navigate({ to: '/fields' })}>
               Book Another Field
             </Button>

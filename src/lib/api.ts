@@ -74,14 +74,21 @@ export const API_ROUTES = {
   bookings: {
     create: `${API_BASE_URL}/bookings`,
     list: `${API_BASE_URL}/users/bookings`,
+    adminList: `${API_BASE_URL}/bookings`, // Admin endpoint to get all bookings
     details: (id: string) => `${API_BASE_URL}/bookings/${id}`,
     cancel: (id: string) => `${API_BASE_URL}/bookings/${id}/cancel`,
     slots: `${API_BASE_URL}/bookings/slots`,
   },
   users: {
     profile: () => `${API_BASE_URL}/users/profile`,
+    admin: {
+      list: `${API_BASE_URL}/users/admin`,
+      details: (id: string) => `${API_BASE_URL}/users/admin/${id}`,
+      updateRole: (id: string) => `${API_BASE_URL}/users/admin/${id}/role`,
+    },
   },
   payments: {
+    list: `${API_BASE_URL}/payments`,
     callbacks: `${API_BASE_URL}/payments/callbacks`,
     details: (id: string) => `${API_BASE_URL}/payments/${id}`,
     byBooking: (bookingId: string) => `${API_BASE_URL}/payments/booking/${bookingId}`,

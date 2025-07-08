@@ -37,6 +37,8 @@ interface DataTableProps<TData, TValue> {
   searchPlaceholder?: string
   showColumnToggle?: boolean
   showPagination?: boolean
+  customFilterComponent?: React.ReactNode
+  initialSorting?: SortingState
 }
 
 export function DataTable<TData, TValue>({
@@ -46,8 +48,10 @@ export function DataTable<TData, TValue>({
   searchPlaceholder = "Search...",
   showColumnToggle = true,
   showPagination = true,
+  customFilterComponent,
+  initialSorting = []
 }: DataTableProps<TData, TValue>) {
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>(initialSorting)
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
@@ -73,21 +77,24 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
-        {searchKey && (
-          <Input
-            placeholder={searchPlaceholder}
-            value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn(searchKey)?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm"
-          />
-        )}
+      <div className="flex items-center py-4 justify-between">
+        <div className="flex gap-4 items-center">
+          {searchKey && (
+            <Input
+              placeholder={searchPlaceholder}
+              value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
+              onChange={(event) =>
+                table.getColumn(searchKey)?.setFilterValue(event.target.value)
+              }
+              className="max-w-sm"
+            />
+          )}
+          {customFilterComponent}
+        </div>
         {showColumnToggle && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
+              <Button variant="outline">
                 Columns <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
