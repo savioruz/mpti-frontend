@@ -214,20 +214,29 @@ function LocationManagement() {
           <h1 className="text-3xl font-bold">Location Management</h1>
           <p className="text-muted-foreground">Manage sports field locations</p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={handleCreateDialogOpen}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Location
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Create New Location</DialogTitle>
-              <DialogDescription>
-                Add a new location for sports fields. All fields are required.
-              </DialogDescription>
-            </DialogHeader>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => refreshData(false)}
+            disabled={loading}
+          >
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Refresh
+          </Button>
+          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={handleCreateDialogOpen}>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Location
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Create New Location</DialogTitle>
+                <DialogDescription>
+                  Add a new location for sports fields. All fields are required.
+                </DialogDescription>
+              </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
                 <Label htmlFor="name">Name</Label>
@@ -283,23 +292,13 @@ function LocationManagement() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Data Table */}
       <Card key={`locations-table-${dataRefreshKey}`}>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Locations ({locations.length} total)</CardTitle>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => refreshData(false)}
-              disabled={loading}
-            >
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Refresh
-            </Button>
-          </div>
+          <CardTitle>Locations ({locations.length} total)</CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (

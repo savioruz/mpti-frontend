@@ -1,11 +1,5 @@
-import { type ColumnDef } from "@tanstack/react-table"
+import type { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,8 +11,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { ArrowUpDown, Eye, Edit, Trash2, MoreHorizontal, Loader2 } from "lucide-react"
-import { type Location } from "@/lib/location"
+import { ArrowUpDown, Eye, Edit, Trash2, Loader2 } from "lucide-react"
+import type { Location } from "@/lib/location"
 
 interface LocationTableActionsProps {
   location: Location
@@ -30,50 +24,54 @@ interface LocationTableActionsProps {
 
 function LocationTableActions({ location, onView, onEdit, onDelete, actionLoading }: LocationTableActionsProps) {
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="h-8 w-8 p-0">
-          <span className="sr-only">Open menu</span>
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => onView(location)}>
-          <Eye className="mr-2 h-4 w-4" />
-          View
-        </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => onEdit(location)}>
-          <Edit className="mr-2 h-4 w-4" />
-          Edit
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <AlertDialog>
-            <AlertDialogTrigger className="w-full">
-              <div className="flex items-center px-2 py-1.5 text-sm text-destructive rounded-sm cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors">
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </div>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete the location
-                  "{location.name}" and all associated data.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel disabled={actionLoading}>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={() => onDelete(location.id)} disabled={actionLoading}>
-                  {actionLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex items-center gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onView(location)}
+        disabled={actionLoading}
+        className="border-blue-200 text-blue-600 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300"
+      >
+        <Eye className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onEdit(location)}
+        disabled={actionLoading}
+        className="border-green-200 text-green-600 hover:bg-green-50 hover:text-green-700 hover:border-green-300"
+      >
+        <Edit className="h-4 w-4" />
+      </Button>
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={actionLoading}
+            className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the location
+              "{location.name}" and all associated data.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={actionLoading}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => onDelete(location.id)} disabled={actionLoading}>
+              {actionLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
   )
 }
 
@@ -144,6 +142,8 @@ export function createLocationColumns(
     },
     {
       id: "actions",
+      accessorKey: "actions",
+      header: "Actions",
       enableHiding: false,
       cell: ({ row }) => {
         const location = row.original
