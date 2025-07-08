@@ -48,8 +48,11 @@ export type PaymentDetails = {
   paid_at?: string;
 };
 
-// Payment is created automatically when booking is created
-// The booking API returns payment information directly
+// Get all payments with optional filtering and pagination (Admin endpoint)
+export async function getAdminPayments(params?: GetPaymentsParams): Promise<GetPaymentsResponse> {
+  const response = await API.get(API_ROUTES.payments.list, { params });
+  return response.data;
+}
 
 export async function getPaymentByBookingId(bookingId: string): Promise<{ data: PaymentResponse[] }> {
   const response = await API.get(API_ROUTES.payments.byBooking(bookingId));
@@ -117,3 +120,18 @@ export function getPaymentStatusText(status: PaymentStatus): string {
       return "Unknown Status";
   }
 }
+
+export type GetPaymentsResponse = {
+  data: {
+    payments: PaymentResponse[];
+    total_items: number;
+    total_pages: number;
+  };
+};
+
+export type GetPaymentsParams = {
+  payment_method?: string;
+  payment_status?: string;
+  page?: number;
+  limit?: number;
+};
