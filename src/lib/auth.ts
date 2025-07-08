@@ -208,6 +208,7 @@ export const isTokenExpired = (token?: string | null): boolean => {
 // RBAC Types
 export enum UserRole {
   USER = "1",
+  STAFF = "2", 
   ADMIN = "9",
 }
 
@@ -256,9 +257,20 @@ export const hasRole = (requiredRole: UserRole): boolean => {
   return parseInt(userRole) >= parseInt(requiredRole);
 };
 
-// Check if user is admin (level 2) or higher
+// Check if user is admin (level 9) or higher
 export const isAdmin = (): boolean => {
   return hasRole(UserRole.ADMIN);
+};
+
+// Check if user is staff (level 2) or higher (includes admin)
+export const isStaffOrAdmin = (): boolean => {
+  return hasRole(UserRole.STAFF);
+};
+
+// Check if user is regular user only (level 1)
+export const isUserOnly = (): boolean => {
+  const userRole = getUserRole();
+  return userRole === UserRole.USER;
 };
 
 // Logout function

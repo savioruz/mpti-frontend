@@ -189,18 +189,17 @@ export function DatetimePickerV1() {
     }
   }
 
-  // Generate time slots from 6 AM to 12 AM (midnight) - 18 hours total
+  // Generate time slots from 6 AM to 11 PM (23:00) - maximum start time is 23:00
   const generateTimeSlots = () => {
     const slots = [];
-    for (let hour = 6; hour <= 24; hour++) {
-      const currentHour = hour === 24 ? 0 : hour; // Handle midnight as 00:00
-      const startTime = `${currentHour.toString().padStart(2, "0")}:00`;
-      const displayHour = hour === 24 ? "00:00" : `${hour.toString().padStart(2, "0")}:00`;
+    for (let hour = 6; hour <= 23; hour++) {
+      const startTime = `${hour.toString().padStart(2, "0")}:00`;
+      const displayHour = `${hour.toString().padStart(2, "0")}:00`;
       
       slots.push({
         display: displayHour,
         startTime: startTime,
-        value: `${startTime} - ${hour === 24 ? "01:00" : (hour + 1).toString().padStart(2, "0") + ":00"}`,
+        value: `${startTime} - ${(hour + 1).toString().padStart(2, "0")}:00`,
         hour: hour
       });
     }
@@ -444,6 +443,17 @@ export function DatetimePickerV1() {
                         const endHour = parseInt(timeOption.startTime.split(':')[0]);
                         return endHour > startHour; // Only show times after start time
                       })
+                      .concat(
+                        // Add 24:00 (midnight) option only if start time is 23:00
+                        parseInt(form.watch("time_start").split(':')[0]) === 23 
+                          ? [{
+                              display: "00:00",
+                              startTime: "00:00",
+                              value: "00:00 - 01:00",
+                              hour: 24
+                            }]
+                          : []
+                      )
                       .map((timeOption) => {
                         const isBooked = isTimeSlotBooked(timeOption.value);
                         const isSelected = field.value === timeOption.startTime;

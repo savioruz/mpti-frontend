@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, LayoutDashboard } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "@tanstack/react-router";
 
@@ -64,8 +64,8 @@ export function ProfileDropdown({ triggerContent }: ProfileDropdownProps) {
           className="cursor-pointer flex items-center gap-2"
           onClick={() => navigate({ to: '/dashboard' })}
         >
-          <User size={16} />
-          <span>Profile</span>
+          <LayoutDashboard size={16} />
+          <span>Dashboard</span>
         </DropdownMenuItem>
 
         <DropdownMenuItem

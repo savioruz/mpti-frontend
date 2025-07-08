@@ -14,7 +14,7 @@ export const Route = createRootRoute({
             <>
                 <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
                     <main className={isAdminRoute ? "" : "flex flex-col container mx-auto"}>
-                        {!isAdminRoute && <Header/>}
+                        <Header/>
                         <Outlet/>
                         <TanStackRouterDevtools/>
                     </main>

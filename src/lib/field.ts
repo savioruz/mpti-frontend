@@ -6,6 +6,7 @@ export type CreateFieldPayload = {
   name: string;
   price: number;
   type: string;
+  images?: string[];
 };
 
 export type UpdateFieldPayload = {
@@ -14,6 +15,7 @@ export type UpdateFieldPayload = {
   name?: string;
   price?: number;
   type?: string;
+  images?: string[];
 };
 
 export type Field = {
@@ -23,6 +25,7 @@ export type Field = {
   name: string;
   price: number;
   type: string;
+  images?: string[];
   created_at: string;
   updated_at: string;
 };
@@ -78,4 +81,25 @@ export async function updateField(id: string, payload: UpdateFieldPayload) {
 export async function deleteField(id: string) {
   const response = await API.delete(API_ROUTES.fields.details(id));
   return response.data;
-} 
+}
+
+export async function uploadFieldImages(fieldId: string, files: File[]) {
+  const formData = new FormData();
+  files.forEach((file) => {
+    formData.append('images', file);
+  });
+
+  const response = await API.post(`${API_ROUTES.fields.details(fieldId)}/images`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+}
+
+export async function deleteFieldImage(fieldId: string, imageURL: string) {
+  const response = await API.delete(`${API_ROUTES.fields.details(fieldId)}/images`, {
+    params: { imageURL },
+  });
+  return response.data;
+}
