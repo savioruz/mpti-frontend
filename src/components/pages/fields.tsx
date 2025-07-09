@@ -140,10 +140,7 @@ export function DatetimePickerV1() {
       const bookingId =
         typeof bookingResponse.data === "string"
           ? bookingResponse.data
-          : (bookingResponse.data as any)?.id || String(bookingResponse.data); // Handle different response formats
-
-      console.log("Booking response:", bookingResponse.data);
-      console.log("Extracted booking ID:", bookingId);
+          : (bookingResponse.data as any)?.order_id;
 
       toast.success(
         `Booking created successfully! Redirecting to booking details...`,
