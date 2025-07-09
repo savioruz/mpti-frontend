@@ -1,4 +1,3 @@
-// src/components/pages/admin/admin-sidebar.tsx
 import {
   Sidebar,
   SidebarContent,
@@ -16,7 +15,7 @@ import {
   Calendar, 
   CreditCard, 
   BarChart3,
-  Settings
+  Building
 } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
 import React from "react";
@@ -37,7 +36,7 @@ const AdminSidebar: React.FC = () => {
     <Sidebar className="bg-muted border-r">
       <SidebarHeader>
         <Link to="/" className="block">
-          <div className="font-bold text-lg p-4 hover:bg-gray-100 rounded-md transition-colors">
+          <div className="font-bold text-lg hover:bg-accent hover:text-accent-foreground text-lg p-4 rounded-md transition-colors">
             Admin Panel
           </div>
         </Link>
@@ -93,7 +92,7 @@ const AdminSidebar: React.FC = () => {
                       : "hover:bg-accent hover:text-accent-foreground"
                   )}
                 >
-                  <Settings className="mr-2" /> 
+                  <Building className="mr-2" /> 
                   <span className="flex items-center gap-2">
                     Fields
                   </span>

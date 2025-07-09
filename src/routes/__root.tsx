@@ -1,5 +1,4 @@
 import {createRootRoute, Outlet, useLocation} from '@tanstack/react-router'
-import {TanStackRouterDevtools} from '@tanstack/react-router-devtools'
 
 import Header from '../components/common/header.tsx'
 import {ThemeProvider} from "@/components/ui/theme-provider.tsx";
@@ -16,7 +15,6 @@ export const Route = createRootRoute({
                     <main className={isAdminRoute ? "" : "flex flex-col container mx-auto"}>
                         <Header/>
                         <Outlet/>
-                        <TanStackRouterDevtools/>
                     </main>
                     <Toaster
                         position="top-right"
