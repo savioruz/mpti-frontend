@@ -136,17 +136,24 @@ export function DatetimePickerV1() {
         cash: false, // Default to online payment
       });
 
-      // Get the booking details to get payment information
-      const bookingId =
-        typeof bookingResponse.data === "string"
-          ? bookingResponse.data
-          : (bookingResponse.data as any)?.order_id;
+      let bookingId: string | null = null;
+      
+      if (typeof bookingResponse.data === "string") {
+        bookingId = bookingResponse.data;
+      } else if (bookingResponse.data && typeof bookingResponse.data === "object") {
+        bookingId = (bookingResponse.data as any)?.order_id;
+      }
+      
+      if (!bookingId) {
+        toast.error("Booking created but failed to get booking ID. Please check your bookings page.");
+        return;
+      }
 
       toast.success(
         `Booking created successfully! Redirecting to booking details...`,
       );
 
-      // Navigate to booking details page instead of showing modal
+      // Navigate to booking details page using the order_id (booking ID)
       setTimeout(() => {
         navigate({
           to: "/booking/$bookingId",
