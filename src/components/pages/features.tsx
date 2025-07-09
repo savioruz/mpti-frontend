@@ -25,7 +25,8 @@ const featureList: FeaturesProps[] = [
   {
     icon: BadgeCheck,
     title: "Transparent Pricing",
-    description: "Semua harga ditampilkan dengan jelas tanpa biaya tersembunyi.",
+    description:
+      "Semua harga ditampilkan dengan jelas tanpa biaya tersembunyi.",
   },
   {
     icon: Goal,
@@ -63,8 +64,9 @@ export const FeaturesSection = () => {
         What Makes Us Different
       </h2>
       <h3 className="md:w-2/3 lg:w-1/2 mx-auto text-base md:text-lg text-center text-muted-foreground mb-14">
-        Kami hadir untuk mempermudah proses pemesanan lapangan olahraga dengan sistem yang cepat, aman, dan responsif. 
-        Nikmati pengalaman booking tanpa ribet langsung dari genggaman Anda.
+        Kami hadir untuk mempermudah proses pemesanan lapangan olahraga dengan
+        sistem yang cepat, aman, dan responsif. Nikmati pengalaman booking tanpa
+        ribet langsung dari genggaman Anda.
       </h3>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {featureList.map(({ icon: Icon, title, description }) => (
@@ -76,7 +78,9 @@ export const FeaturesSection = () => {
               <div className="bg-gradient-to-br from-[#00008B]/20 to-primary/30 p-6 rounded-full ring-8 ring-primary/10 mb-5 transition-transform duration-300 hover:scale-110 shadow-md">
                 <Icon size={40} className="text-[#00008B]" />
               </div>
-              <div className="text-lg font-bold text-center text-[#00008B]">{title}</div>
+              <div className="text-lg font-bold text-center text-[#00008B]">
+                {title}
+              </div>
             </CardHeader>
             <CardContent className="text-muted-foreground text-center px-4 pb-10">
               {description}

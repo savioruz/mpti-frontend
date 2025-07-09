@@ -1,5 +1,5 @@
-import type { ColumnDef } from "@tanstack/react-table"
-import { Button } from "@/components/ui/button"
+import type { ColumnDef } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,19 +10,25 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { ArrowUpDown, Eye, Edit, Trash2, Loader2 } from "lucide-react"
-import type { Location } from "@/lib/location"
+} from "@/components/ui/alert-dialog";
+import { ArrowUpDown, Eye, Edit, Trash2, Loader2 } from "lucide-react";
+import type { Location } from "@/lib/location";
 
 interface LocationTableActionsProps {
-  location: Location
-  onView: (location: Location) => void
-  onEdit: (location: Location) => void
-  onDelete: (id: string) => void
-  actionLoading: boolean
+  location: Location;
+  onView: (location: Location) => void;
+  onEdit: (location: Location) => void;
+  onDelete: (id: string) => void;
+  actionLoading: boolean;
 }
 
-function LocationTableActions({ location, onView, onEdit, onDelete, actionLoading }: LocationTableActionsProps) {
+function LocationTableActions({
+  location,
+  onView,
+  onEdit,
+  onDelete,
+  actionLoading,
+}: LocationTableActionsProps) {
   return (
     <div className="flex items-center gap-2">
       <Button
@@ -58,28 +64,35 @@ function LocationTableActions({ location, onView, onEdit, onDelete, actionLoadin
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the location
-              "{location.name}" and all associated data.
+              This action cannot be undone. This will permanently delete the
+              location "{location.name}" and all associated data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={actionLoading}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => onDelete(location.id)} disabled={actionLoading}>
-              {actionLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            <AlertDialogCancel disabled={actionLoading}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => onDelete(location.id)}
+              disabled={actionLoading}
+            >
+              {actionLoading && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
-  )
+  );
 }
 
 export function createLocationColumns(
   onView: (location: Location) => void,
   onEdit: (location: Location) => void,
   onDelete: (id: string) => void,
-  actionLoading: boolean
+  actionLoading: boolean,
 ): ColumnDef<Location>[] {
   return [
     {
@@ -93,33 +106,37 @@ export function createLocationColumns(
             Name
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
-        )
+        );
       },
-      cell: ({ row }) => <div className="font-medium">{row.getValue("name")}</div>,
+      cell: ({ row }) => (
+        <div className="font-medium">{row.getValue("name")}</div>
+      ),
     },
     {
       accessorKey: "description",
       header: "Description",
       cell: ({ row }) => {
-        const description = row.getValue("description") as string
+        const description = row.getValue("description") as string;
         return (
           <div className="max-w-[300px] truncate">
-            {description || <span className="text-muted-foreground">No description</span>}
+            {description || (
+              <span className="text-muted-foreground">No description</span>
+            )}
           </div>
-        )
+        );
       },
     },
     {
       accessorKey: "coordinates",
       header: "Coordinates",
       cell: ({ row }) => {
-        const location = row.original
+        const location = row.original;
         return (
           <div className="text-sm">
             <div>Lat: {location.latitude.toFixed(6)}</div>
             <div>Lng: {location.longitude.toFixed(6)}</div>
           </div>
-        )
+        );
       },
     },
     {
@@ -133,11 +150,11 @@ export function createLocationColumns(
             Created At
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
-        )
+        );
       },
       cell: ({ row }) => {
-        const date = new Date(row.getValue("created_at"))
-        return <div>{date.toLocaleDateString()}</div>
+        const date = new Date(row.getValue("created_at"));
+        return <div>{date.toLocaleDateString()}</div>;
       },
     },
     {
@@ -146,7 +163,7 @@ export function createLocationColumns(
       header: "Actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const location = row.original
+        const location = row.original;
         return (
           <LocationTableActions
             location={location}
@@ -155,8 +172,8 @@ export function createLocationColumns(
             onDelete={onDelete}
             actionLoading={actionLoading}
           />
-        )
+        );
       },
     },
-  ]
+  ];
 }

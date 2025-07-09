@@ -1,12 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, RefreshCw, Plus, AlertCircle } from 'lucide-react';
+import { Search, RefreshCw, Plus, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-import { getUserBookings, cancelBooking, type BookingResponse } from "@/lib/booking";
+import {
+  getUserBookings,
+  cancelBooking,
+  type BookingResponse,
+} from "@/lib/booking";
 import { getField, type Field } from "@/lib/field";
 import { getLocationById, type Location } from "@/lib/location";
 import { BookingCard } from "@/components/booking/booking-card";
@@ -34,31 +38,31 @@ const BookingManagement: React.FC = () => {
   }, []);
 
   const loadBookings = async () => {
-    setLoading(prev => ({ ...prev, bookings: true }));
+    setLoading((prev) => ({ ...prev, bookings: true }));
     try {
       const response = await getUserBookings({ limit: 100 });
       setBookings(response.data.bookings);
-      
+
       // Load field and location details for each booking
       const details: BookingDetailsMap = {};
-      
+
       for (const booking of response.data.bookings) {
         try {
           const fieldResponse = await getField(booking.field_id);
           const field = fieldResponse.data;
           const locationResponse = await getLocationById(field.location_id);
           const location = locationResponse.data;
-          
+
           details[booking.id] = { field, location };
         } catch (error) {
           // Skip if unable to load details for this booking
         }
       }
-      
+
       setBookingDetails(details);
     } catch (error: any) {
       let errorMessage = "Failed to load bookings";
-      
+
       if (error.response?.status === 401) {
         errorMessage = "Please log in to view your bookings";
       } else if (error.response?.status === 403) {
@@ -70,30 +74,30 @@ const BookingManagement: React.FC = () => {
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       toast.error(errorMessage);
     } finally {
-      setLoading(prev => ({ ...prev, bookings: false }));
+      setLoading((prev) => ({ ...prev, bookings: false }));
     }
   };
 
   const handleCancelBooking = async (bookingId: string) => {
-    setLoading(prev => ({ ...prev, canceling: bookingId }));
+    setLoading((prev) => ({ ...prev, canceling: bookingId }));
     try {
       await cancelBooking(bookingId);
-      toast.success('Booking cancelled successfully');
-      
+      toast.success("Booking cancelled successfully");
+
       // Update the booking status in the state
-      setBookings(prevBookings => 
-        prevBookings.map(booking => 
-          booking.id === bookingId 
-            ? { ...booking, status: 'CANCELLED' as const }
-            : booking
-        )
+      setBookings((prevBookings) =>
+        prevBookings.map((booking) =>
+          booking.id === bookingId
+            ? { ...booking, status: "CANCELLED" as const }
+            : booking,
+        ),
       );
     } catch (error: any) {
       let errorMessage = "Failed to cancel booking";
-      
+
       if (error.response?.status === 400) {
         if (error.response?.data?.error) {
           errorMessage = error.response.data.error;
@@ -113,44 +117,62 @@ const BookingManagement: React.FC = () => {
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       toast.error(errorMessage);
     } finally {
-      setLoading(prev => ({ ...prev, canceling: "" }));
+      setLoading((prev) => ({ ...prev, canceling: "" }));
     }
   };
 
   const handleRefresh = async () => {
-    setLoading(prev => ({ ...prev, refreshing: true }));
+    setLoading((prev) => ({ ...prev, refreshing: true }));
     await loadBookings();
-    setLoading(prev => ({ ...prev, refreshing: false }));
-    toast.success('Bookings refreshed');
+    setLoading((prev) => ({ ...prev, refreshing: false }));
+    toast.success("Bookings refreshed");
   };
 
   // Filter bookings based on search term and status
-  const filteredBookings = bookings.filter(booking => {
-    const matchesSearch = searchTerm === "" || 
-      bookingDetails[booking.id]?.field?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      bookingDetails[booking.id]?.location?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  const filteredBookings = bookings.filter((booking) => {
+    const matchesSearch =
+      searchTerm === "" ||
+      bookingDetails[booking.id]?.field?.name
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      bookingDetails[booking.id]?.location?.name
+        ?.toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
       booking.status.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    const matchesStatus = statusFilter === "all" || booking.status === statusFilter;
-    
+
+    const matchesStatus =
+      statusFilter === "all" || booking.status === statusFilter;
+
     return matchesSearch && matchesStatus;
   });
 
   const getStatusCount = (status: string) => {
-    return bookings.filter(booking => 
-      status === "all" ? true : booking.status === status
+    return bookings.filter((booking) =>
+      status === "all" ? true : booking.status === status,
     ).length;
   };
 
   const statusOptions = [
     { value: "all", label: "All Bookings", count: getStatusCount("all") },
-    { value: "CONFIRMED", label: "Confirmed", count: getStatusCount("CONFIRMED") },
+    {
+      value: "CONFIRMED",
+      label: "Confirmed",
+      count: getStatusCount("CONFIRMED"),
+    },
     { value: "PENDING", label: "Pending", count: getStatusCount("PENDING") },
-    { value: "CANCELLED", label: "Cancelled", count: getStatusCount("CANCELLED") },
-    { value: "COMPLETED", label: "Completed", count: getStatusCount("COMPLETED") },
+    {
+      value: "CANCELLED",
+      label: "Cancelled",
+      count: getStatusCount("CANCELLED"),
+    },
+    {
+      value: "COMPLETED",
+      label: "Completed",
+      count: getStatusCount("COMPLETED"),
+    },
   ];
 
   return (
@@ -158,15 +180,19 @@ const BookingManagement: React.FC = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold">My Bookings</h1>
-          <p className="text-gray-600 mt-2">Manage your field reservations and payments</p>
+          <p className="text-gray-600 mt-2">
+            Manage your field reservations and payments
+          </p>
         </div>
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={handleRefresh}
             disabled={loading.refreshing}
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading.refreshing ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${loading.refreshing ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
           <Button asChild>
@@ -191,12 +217,14 @@ const BookingManagement: React.FC = () => {
                 className="pl-10"
               />
             </div>
-            
+
             <div className="flex gap-2">
-              {statusOptions.map(option => (
+              {statusOptions.map((option) => (
                 <Button
                   key={option.value}
-                  variant={statusFilter === option.value ? "default" : "outline"}
+                  variant={
+                    statusFilter === option.value ? "default" : "outline"
+                  }
                   onClick={() => setStatusFilter(option.value)}
                   className="flex items-center gap-2"
                 >
@@ -240,10 +268,12 @@ const BookingManagement: React.FC = () => {
           <Card>
             <CardContent className="p-8 text-center">
               <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No bookings found</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No bookings found
+              </h3>
               <p className="text-gray-600 mb-4">
-                {searchTerm || statusFilter !== "all" 
-                  ? "No bookings match your search criteria." 
+                {searchTerm || statusFilter !== "all"
+                  ? "No bookings match your search criteria."
                   : "You haven't made any bookings yet."}
               </p>
               <Button asChild>

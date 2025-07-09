@@ -1,12 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ExternalLink, Clock, CreditCard, AlertCircle, CheckCircle, Eye } from 'lucide-react';
-import { format } from 'date-fns';
-import { Link } from '@tanstack/react-router';
-import { formatCurrency, getPaymentStatusColor, getPaymentStatusText, type PaymentStatus } from '@/lib/payment';
+import {
+  ExternalLink,
+  Clock,
+  CreditCard,
+  AlertCircle,
+  CheckCircle,
+  Eye,
+} from "lucide-react";
+import { format } from "date-fns";
+import { Link } from "@tanstack/react-router";
+import {
+  formatCurrency,
+  getPaymentStatusColor,
+  getPaymentStatusText,
+  type PaymentStatus,
+} from "@/lib/payment";
 
 export type PaymentInfo = {
   id: string;
@@ -37,15 +49,15 @@ interface PaymentConfirmationProps {
 export const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
   paymentInfo,
   bookingInfo,
-  onClose
+  onClose,
 }) => {
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handlePayNow = () => {
     setIsProcessing(true);
     // Redirect to payment gateway
-    window.open(paymentInfo.payment_url, '_blank');
-    
+    window.open(paymentInfo.payment_url, "_blank");
+
     // Reset processing state after a delay
     setTimeout(() => {
       setIsProcessing(false);
@@ -68,7 +80,8 @@ export const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
   };
 
   const isPaymentExpired = new Date(paymentInfo.expiry_date) < new Date();
-  const timeUntilExpiry = new Date(paymentInfo.expiry_date).getTime() - new Date().getTime();
+  const timeUntilExpiry =
+    new Date(paymentInfo.expiry_date).getTime() - new Date().getTime();
   const minutesUntilExpiry = Math.floor(timeUntilExpiry / (1000 * 60));
 
   return (
@@ -84,7 +97,9 @@ export const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
           {/* Payment Status */}
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Payment Status</span>
-            <Badge className={`${getPaymentStatusColor(paymentInfo.status)} flex items-center gap-1`}>
+            <Badge
+              className={`${getPaymentStatusColor(paymentInfo.status)} flex items-center gap-1`}
+            >
               {getStatusIcon(paymentInfo.status)}
               {getPaymentStatusText(paymentInfo.status)}
             </Badge>
@@ -104,15 +119,21 @@ export const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Date:</span>
-                <span className="font-medium">{format(new Date(bookingInfo.date), 'PPP')}</span>
+                <span className="font-medium">
+                  {format(new Date(bookingInfo.date), "PPP")}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Time:</span>
-                <span className="font-medium">{bookingInfo.start_time} - {bookingInfo.end_time}</span>
+                <span className="font-medium">
+                  {bookingInfo.start_time} - {bookingInfo.end_time}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Duration:</span>
-                <span className="font-medium">{bookingInfo.duration} hour(s)</span>
+                <span className="font-medium">
+                  {bookingInfo.duration} hour(s)
+                </span>
               </div>
             </div>
           </div>
@@ -125,16 +146,22 @@ export const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">Order ID:</span>
-                <span className="font-mono text-xs">{paymentInfo.order_id}</span>
+                <span className="font-mono text-xs">
+                  {paymentInfo.order_id}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Amount:</span>
-                <span className="font-medium text-lg">{formatCurrency(paymentInfo.amount)}</span>
+                <span className="font-medium text-lg">
+                  {formatCurrency(paymentInfo.amount)}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Expires:</span>
-                <span className={`font-medium ${isPaymentExpired ? 'text-red-600' : 'text-gray-900'}`}>
-                  {format(new Date(paymentInfo.expiry_date), 'PPp')}
+                <span
+                  className={`font-medium ${isPaymentExpired ? "text-red-600" : "text-gray-900"}`}
+                >
+                  {format(new Date(paymentInfo.expiry_date), "PPp")}
                 </span>
               </div>
               {!isPaymentExpired && minutesUntilExpiry > 0 && (
@@ -154,13 +181,16 @@ export const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
               Close
             </Button>
             <Button asChild variant="outline" className="flex-1">
-              <Link to="/booking/$bookingId" params={{ bookingId: paymentInfo.id }}>
+              <Link
+                to="/booking/$bookingId"
+                params={{ bookingId: paymentInfo.id }}
+              >
                 <Eye className="w-4 h-4 mr-2" />
                 View Details
               </Link>
             </Button>
             {paymentInfo.status === "PENDING" && !isPaymentExpired && (
-              <Button 
+              <Button
                 onClick={handlePayNow}
                 disabled={isProcessing}
                 className="flex-1 flex items-center gap-2"
@@ -186,9 +216,12 @@ export const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
               <div className="flex items-start gap-2">
                 <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-blue-900">Payment Instructions:</p>
+                  <p className="font-medium text-blue-900">
+                    Payment Instructions:
+                  </p>
                   <p className="text-blue-800 mt-1">
-                    Click "Pay Now" to complete your payment. You will be redirected to a secure payment page.
+                    Click "Pay Now" to complete your payment. You will be
+                    redirected to a secure payment page.
                   </p>
                 </div>
               </div>
@@ -203,7 +236,8 @@ export const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
                 <div>
                   <p className="font-medium text-red-900">Payment Expired</p>
                   <p className="text-red-800 mt-1">
-                    This payment link has expired. Please create a new booking to make a payment.
+                    This payment link has expired. Please create a new booking
+                    to make a payment.
                   </p>
                 </div>
               </div>

@@ -13,7 +13,7 @@ export const Route = createFileRoute("/dashboard/")({
         },
       });
     }
-    
+
     // If user is staff or admin, redirect to admin dashboard
     if (isStaffOrAdmin()) {
       throw redirect({

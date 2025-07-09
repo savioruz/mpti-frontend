@@ -1,8 +1,4 @@
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-} from "@/components/ui/card";
+import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 
 interface ServiceProps {
   title: string;
@@ -21,7 +17,8 @@ const serviceList: ServiceProps[] = [
   },
   {
     title: "Wajib Menggunakan Sepatu Non-Marking",
-    description: "Hanya sepatu khusus non-marking yang diizinkan untuk menjaga kualitas lantai lapangan.",
+    description:
+      "Hanya sepatu khusus non-marking yang diizinkan untuk menjaga kualitas lantai lapangan.",
   },
   {
     title: "Penggunaan Lampu Lapangan",
@@ -40,7 +37,8 @@ export const ServicesSection = () => {
         Field Rules
       </h2>
       <h3 className="md:w-2/3 lg:w-1/2 mx-auto text-base md:text-lg text-center text-muted-foreground mb-14">
-        Demi kenyamanan dan keselamatan bersama, harap perhatikan aturan berikut saat menggunakan lapangan badminton kami.
+        Demi kenyamanan dan keselamatan bersama, harap perhatikan aturan berikut
+        saat menggunakan lapangan badminton kami.
       </h3>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 
@@ -51,8 +49,12 @@ export const ServicesSection = () => {
             className="h-full bg-white/80 dark:bg-background border border-primary/10 shadow-lg hover:shadow-2xl transition-all duration-300 rounded-3xl hover:-translate-y-1"
           >
             <CardHeader className="flex flex-col justify-center items-center pt-8 pb-4">
-              <div className="text-lg font-bold text-center text-[#000000] mb-2">{title}</div>
-              <CardDescription className="text-center text-muted-foreground px-2 pb-2">{description}</CardDescription>
+              <div className="text-lg font-bold text-center text-[#000000] mb-2">
+                {title}
+              </div>
+              <CardDescription className="text-center text-muted-foreground px-2 pb-2">
+                {description}
+              </CardDescription>
             </CardHeader>
           </Card>
         ))}

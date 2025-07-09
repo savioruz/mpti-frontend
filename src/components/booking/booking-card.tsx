@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Clock, MapPin, Eye } from 'lucide-react';
-import { format } from 'date-fns';
-import { Link } from '@tanstack/react-router';
+import { Calendar, Clock, MapPin, Eye } from "lucide-react";
+import { format } from "date-fns";
+import { Link } from "@tanstack/react-router";
 import { type BookingResponse } from "@/lib/booking";
 import { type Field } from "@/lib/field";
 import { type Location } from "@/lib/location";
@@ -24,27 +24,27 @@ export const BookingCard: React.FC<BookingCardProps> = ({
   location,
   onCancelBooking,
   isCanceling = false,
-  className = ""
+  className = "",
 }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'CONFIRMED':
-        return 'bg-green-100 text-green-800 border-green-300';
-      case 'PENDING':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'CANCELLED':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-300';
-      case 'COMPLETED':
-        return 'bg-blue-100 text-blue-800 border-blue-300';
+      case "CONFIRMED":
+        return "bg-green-100 text-green-800 border-green-300";
+      case "PENDING":
+        return "bg-yellow-100 text-yellow-800 border-yellow-300";
+      case "CANCELLED":
+        return "bg-yellow-100 text-yellow-800 border-yellow-300";
+      case "COMPLETED":
+        return "bg-blue-100 text-blue-800 border-blue-300";
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-300';
+        return "bg-gray-100 text-gray-800 border-gray-300";
     }
   };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(price);
@@ -53,7 +53,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
   // Helper function to determine if a booking can be canceled
   const canCancelBooking = (status: string) => {
     // Only allow cancellation for pending and confirmed bookings
-    const cancelableStatuses = ['PENDING', 'CONFIRMED'];
+    const cancelableStatuses = ["PENDING", "CONFIRMED"];
     return cancelableStatuses.includes(status.toUpperCase());
   };
 
@@ -70,7 +70,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
                 {booking.status}
               </Badge>
             </div>
-            
+
             {/* Location and Date Info */}
             <div className="flex items-center gap-4 text-sm text-gray-600">
               <div className="flex items-center gap-1">
@@ -83,10 +83,12 @@ export const BookingCard: React.FC<BookingCardProps> = ({
               </div>
               <div className="flex items-center gap-1">
                 <Clock className="h-4 w-4" />
-                <span>{booking.start_time} - {booking.end_time}</span>
+                <span>
+                  {booking.start_time} - {booking.end_time}
+                </span>
               </div>
             </div>
-            
+
             {/* Price and Created Date */}
             <div className="flex items-center gap-4 text-sm">
               <span className="font-medium">
@@ -96,15 +98,13 @@ export const BookingCard: React.FC<BookingCardProps> = ({
                 Booked on {format(new Date(booking.created_at), "PPp")}
               </span>
             </div>
-            
+
             {/* Field Description */}
             {field?.description && (
-              <p className="text-sm text-gray-600 mt-2">
-                {field.description}
-              </p>
+              <p className="text-sm text-gray-600 mt-2">{field.description}</p>
             )}
           </div>
-          
+
           {/* Action Buttons */}
           <div className="ml-4 flex flex-col gap-2">
             <Button asChild variant="outline" size="sm">

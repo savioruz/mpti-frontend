@@ -1,15 +1,15 @@
-import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
-import { 
-  SidebarProvider, 
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import {
+  SidebarProvider,
   SidebarInset,
-  SidebarTrigger 
-} from "@/components/ui/sidebar"
-import { Separator } from "@/components/ui/separator"
-import { DynamicBreadcrumb } from "@/components/common/dynamic-breadcrumb"
-import AdminSidebar from "@/components/pages/admin/admin-sidebar"
-import { isAdmin, getAccessToken } from "@/lib/auth"
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { Separator } from "@/components/ui/separator";
+import { DynamicBreadcrumb } from "@/components/common/dynamic-breadcrumb";
+import AdminSidebar from "@/components/pages/admin/admin-sidebar";
+import { isAdmin, getAccessToken } from "@/lib/auth";
 
-export const Route = createFileRoute('/admin')({
+export const Route = createFileRoute("/admin")({
   beforeLoad: async () => {
     const token = getAccessToken();
     if (!token) {
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/admin')({
         },
       });
     }
-    
+
     if (!isAdmin()) {
       throw redirect({
         to: "/dashboard",
@@ -28,7 +28,7 @@ export const Route = createFileRoute('/admin')({
     }
   },
   component: AdminLayout,
-})
+});
 
 function AdminLayout() {
   return (
@@ -49,5 +49,5 @@ function AdminLayout() {
         </SidebarInset>
       </SidebarProvider>
     </div>
-  )
+  );
 }

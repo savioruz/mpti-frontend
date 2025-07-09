@@ -24,16 +24,17 @@ export function ProfileDropdown({ triggerContent }: ProfileDropdownProps) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button size="icon" variant="outline" className="relative">
-          {triggerContent || (
-            profile?.profile_image ? (
+          {triggerContent ||
+            (profile?.profile_image ? (
               <Avatar className="h-7 w-7">
                 <AvatarImage src={profile.profile_image} alt={profile.name} />
-                <AvatarFallback>{profile.name?.charAt(0)?.toUpperCase()}</AvatarFallback>
+                <AvatarFallback>
+                  {profile.name?.charAt(0)?.toUpperCase()}
+                </AvatarFallback>
               </Avatar>
             ) : (
               <User size={20} />
-            )
-          )}
+            ))}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
@@ -46,15 +47,21 @@ export function ProfileDropdown({ triggerContent }: ProfileDropdownProps) {
             <>
               <Avatar className="h-16 w-16 mb-2">
                 <AvatarImage src={profile.profile_image} alt={profile.name} />
-                <AvatarFallback>{profile.name.charAt(0).toUpperCase()}</AvatarFallback>
+                <AvatarFallback>
+                  {profile.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <DropdownMenuLabel className="font-medium text-center">
                 Welcome, {profile.name}
               </DropdownMenuLabel>
-              <p className="text-sm text-muted-foreground pb-2">{profile.email}</p>
+              <p className="text-sm text-muted-foreground pb-2">
+                {profile.email}
+              </p>
             </>
           ) : (
-            <p className="text-sm text-muted-foreground">Unable to load profile data.</p>
+            <p className="text-sm text-muted-foreground">
+              Unable to load profile data.
+            </p>
           )}
         </div>
 
@@ -62,7 +69,7 @@ export function ProfileDropdown({ triggerContent }: ProfileDropdownProps) {
 
         <DropdownMenuItem
           className="cursor-pointer flex items-center gap-2"
-          onClick={() => navigate({ to: '/dashboard' })}
+          onClick={() => navigate({ to: "/dashboard" })}
         >
           <LayoutDashboard size={16} />
           <span>Dashboard</span>

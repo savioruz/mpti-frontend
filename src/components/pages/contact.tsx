@@ -60,7 +60,8 @@ export const ContactSection = () => {
             <h2 className="text-3xl md:text-4xl font-bold">Connect With Us</h2>
           </div>
           <p className="mb-8 text-muted-foreground lg:w-5/6">
-          Punya pertanyaan seputar jadwal atau pemesanan lapangan? Jangan ragu untuk menghubungi kami. Tim Alkadi siap bantu!
+            Punya pertanyaan seputar jadwal atau pemesanan lapangan? Jangan ragu
+            untuk menghubungi kami. Tim Alkadi siap bantu!
           </p>
 
           <div className="flex flex-col gap-4">
@@ -127,6 +128,7 @@ export const ContactSection = () => {
                       </FormItem>
                     )}
                   />
+
                   <FormField
                     control={form.control}
                     name="lastName"

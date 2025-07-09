@@ -1,280 +1,328 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { DataTable } from "@/components/ui/data-table"
-import { Plus, Loader2, RefreshCw, X } from "lucide-react"
-import { useState, useEffect } from 'react'
-import { toast } from 'sonner'
+import { createFileRoute } from "@tanstack/react-router";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { DataTable } from "@/components/ui/data-table";
+import { Plus, Loader2, RefreshCw, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
-import { getAllFields, createField, updateField, deleteField, uploadFieldImages, deleteFieldImage, type Field, type CreateFieldPayload, type UpdateFieldPayload } from '@/lib/field'
-import { getAllLocations, type Location } from '@/lib/location'
-import { createFieldColumns } from '@/components/admin/field-columns'
+import {
+  getAllFields,
+  createField,
+  updateField,
+  deleteField,
+  uploadFieldImages,
+  deleteFieldImage,
+  type Field,
+  type CreateFieldPayload,
+  type UpdateFieldPayload,
+} from "@/lib/field";
+import { getAllLocations, type Location } from "@/lib/location";
+import { createFieldColumns } from "@/components/admin/field-columns";
 
-export const Route = createFileRoute('/admin/fields')({
+export const Route = createFileRoute("/admin/fields")({
   component: FieldManagement,
-})
+});
 
 function FieldManagement() {
-  const [fields, setFields] = useState<Field[]>([])
-  const [locations, setLocations] = useState<Location[]>([])
-  const [loading, setLoading] = useState(true)
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
-  const [editingField, setEditingField] = useState<Field | null>(null)
-  const [viewingField, setViewingField] = useState<Field | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [actionLoading, setActionLoading] = useState(false)
+  const [fields, setFields] = useState<Field[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [editingField, setEditingField] = useState<Field | null>(null);
+  const [viewingField, setViewingField] = useState<Field | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [actionLoading, setActionLoading] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    location_id: '',
+    name: "",
+    description: "",
+    location_id: "",
     price: 0,
-    type: '',
-    images: [] as string[]
-  })
+    type: "",
+    images: [] as string[],
+  });
 
   // Field types
   const fieldTypes = [
-    'Football',
-    'Basketball',
-    'Tennis',
-    'Badminton',
-    'Volleyball',
-    'Futsal',
-    'Other'
-  ]
+    "Football",
+    "Basketball",
+    "Tennis",
+    "Badminton",
+    "Volleyball",
+    "Futsal",
+    "Other",
+  ];
 
   // Load data
   useEffect(() => {
-    loadData()
-  }, [])
+    loadData();
+  }, []);
 
   const loadData = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const [fieldsResponse, locationsResponse] = await Promise.all([
         getAllFields({ limit: 100 }),
-        getAllLocations({ limit: 100 })
-      ])
-      setFields(fieldsResponse.data.fields)
-      setLocations(locationsResponse.data.locations)
+        getAllLocations({ limit: 100 }),
+      ]);
+      setFields(fieldsResponse.data.fields);
+      setLocations(locationsResponse.data.locations);
     } catch (error: any) {
-      toast.error(error.message || 'Failed to load data')
+      toast.error(error.message || "Failed to load data");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // Reset form
   const resetForm = () => {
     setFormData({
-      name: '',
-      description: '',
-      location_id: '',
+      name: "",
+      description: "",
+      location_id: "",
       price: 0,
-      type: '',
-      images: []
-    })
-    setEditingField(null)
-  }
+      type: "",
+      images: [],
+    });
+    setEditingField(null);
+  };
 
   // Handle create
   const handleCreate = async () => {
-    if (!formData.name || !formData.location_id || !formData.type || formData.price <= 0) {
-      toast.error('Please fill in all required fields')
-      return
+    if (
+      !formData.name ||
+      !formData.location_id ||
+      !formData.type ||
+      formData.price <= 0
+    ) {
+      toast.error("Please fill in all required fields");
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
       const payload: CreateFieldPayload = {
         name: formData.name,
         description: formData.description,
         location_id: formData.location_id,
         price: formData.price,
-        type: formData.type
-      }
-      
-      await createField(payload)
-      toast.success('Field created successfully')
-      setIsCreateDialogOpen(false)
-      resetForm()
-      loadData()
+        type: formData.type,
+      };
+
+      await createField(payload);
+      toast.success("Field created successfully");
+      setIsCreateDialogOpen(false);
+      resetForm();
+      loadData();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to create field')
+      toast.error(error.response?.data?.message || "Failed to create field");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   // Handle edit
   const handleEdit = (field: Field) => {
-    setEditingField(field)
+    setEditingField(field);
     setFormData({
       name: field.name,
       description: field.description,
       location_id: field.location_id,
       price: field.price,
       type: field.type,
-      images: field.images || []
-    })
-    setIsEditDialogOpen(true)
-  }
+      images: field.images || [],
+    });
+    setIsEditDialogOpen(true);
+  };
 
   // Handle update
   const handleUpdate = async () => {
-    if (!editingField || !formData.name || !formData.location_id || !formData.type || formData.price <= 0) {
-      toast.error('Please fill in all required fields')
-      return
+    if (
+      !editingField ||
+      !formData.name ||
+      !formData.location_id ||
+      !formData.type ||
+      formData.price <= 0
+    ) {
+      toast.error("Please fill in all required fields");
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
     try {
       const payload: UpdateFieldPayload = {
         name: formData.name,
         description: formData.description,
         location_id: formData.location_id,
         price: formData.price,
-        type: formData.type
-      }
-      
-      await updateField(editingField.id, payload)
-      toast.success('Field updated successfully')
-      setIsEditDialogOpen(false)
-      resetForm()
-      loadData()
+        type: formData.type,
+      };
+
+      await updateField(editingField.id, payload);
+      toast.success("Field updated successfully");
+      setIsEditDialogOpen(false);
+      resetForm();
+      loadData();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to update field')
+      toast.error(error.response?.data?.message || "Failed to update field");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   // Handle delete
   const handleDelete = async (field: Field) => {
-    setActionLoading(true)
+    setActionLoading(true);
     try {
-      await deleteField(field.id)
-      toast.success('Field deleted successfully')
-      loadData()
+      await deleteField(field.id);
+      toast.success("Field deleted successfully");
+      loadData();
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to delete field')
+      toast.error(error.response?.data?.message || "Failed to delete field");
     } finally {
-      setActionLoading(false)
+      setActionLoading(false);
     }
-  }
+  };
 
   // Handle view
   const handleView = (field: Field) => {
-    setViewingField(field)
-    setIsViewDialogOpen(true)
-  }
+    setViewingField(field);
+    setIsViewDialogOpen(true);
+  };
 
   // Handle edit - wrapper for column action
   const handleEditColumn = (field: Field) => {
-    handleEdit(field)
-  }
+    handleEdit(field);
+  };
 
   // Handle delete - wrapper for column action
   const handleDeleteColumn = async (fieldId: string) => {
-    const field = fields.find(f => f.id === fieldId)
+    const field = fields.find((f) => f.id === fieldId);
     if (field) {
-      await handleDelete(field)
+      await handleDelete(field);
     }
-  }
+  };
 
   // Handle image upload
   const handleImageUpload = async (files: FileList | null) => {
-    if (!files || files.length === 0) return
-    
-    const fileArray = Array.from(files)
-    const maxSize = 5 * 1024 * 1024 // 5MB
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp']
-    
+    if (!files || files.length === 0) return;
+
+    const fileArray = Array.from(files);
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
     // Validate files
     for (const file of fileArray) {
       if (file.size > maxSize) {
-        toast.error(`File ${file.name} is too large. Maximum size is 5MB.`)
-        return
+        toast.error(`File ${file.name} is too large. Maximum size is 5MB.`);
+        return;
       }
       if (!allowedTypes.includes(file.type)) {
-        toast.error(`File ${file.name} is not a supported image type.`)
-        return
+        toast.error(`File ${file.name} is not a supported image type.`);
+        return;
       }
     }
-    
+
     // If we're editing an existing field, upload immediately
     if (editingField) {
       try {
-        const response = await uploadFieldImages(editingField.id, fileArray)
+        const response = await uploadFieldImages(editingField.id, fileArray);
         if (response.data && Array.isArray(response.data)) {
-          const newImages = [...(formData.images || []), ...response.data]
-          setFormData(prev => ({ ...prev, images: newImages }))
-          toast.success('Images uploaded successfully')
-          loadData() // Refresh the fields list
+          const newImages = [...(formData.images || []), ...response.data];
+          setFormData((prev) => ({ ...prev, images: newImages }));
+          toast.success("Images uploaded successfully");
+          loadData(); // Refresh the fields list
         }
       } catch (error: any) {
-        toast.error(error.response?.data?.error || 'Failed to upload images')
+        toast.error(error.response?.data?.error || "Failed to upload images");
       }
     } else {
       // For new fields, we'll store as file URLs for preview
       const imageUrls = await Promise.all(
-        fileArray.map(file => {
+        fileArray.map((file) => {
           return new Promise<string>((resolve) => {
-            const reader = new FileReader()
-            reader.onload = (e) => resolve(e.target?.result as string)
-            reader.readAsDataURL(file)
-          })
-        })
-      )
-      
-      setFormData(prev => ({ 
-        ...prev, 
-        images: [...(prev.images || []), ...imageUrls] 
-      }))
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target?.result as string);
+            reader.readAsDataURL(file);
+          });
+        }),
+      );
+
+      setFormData((prev) => ({
+        ...prev,
+        images: [...(prev.images || []), ...imageUrls],
+      }));
     }
-  }
+  };
 
   // Handle image remove
   const handleImageRemove = async (imageUrl: string) => {
     if (editingField) {
       try {
-        await deleteFieldImage(editingField.id, imageUrl)
-        const newImages = formData.images.filter(img => img !== imageUrl)
-        setFormData(prev => ({ ...prev, images: newImages }))
-        toast.success('Image removed successfully')
-        loadData() // Refresh the fields list
+        await deleteFieldImage(editingField.id, imageUrl);
+        const newImages = formData.images.filter((img) => img !== imageUrl);
+        setFormData((prev) => ({ ...prev, images: newImages }));
+        toast.success("Image removed successfully");
+        loadData(); // Refresh the fields list
       } catch (error: any) {
-        toast.error(error.response?.data?.error || 'Failed to remove image')
+        toast.error(error.response?.data?.error || "Failed to remove image");
       }
     } else {
       // For new fields, just remove from local state
-      const newImages = formData.images.filter(img => img !== imageUrl)
-      setFormData(prev => ({ ...prev, images: newImages }))
+      const newImages = formData.images.filter((img) => img !== imageUrl);
+      setFormData((prev) => ({ ...prev, images: newImages }));
     }
-  }
+  };
 
   return (
     <div className="container mx-auto py-6">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold">Field Management</h1>
-          <p className="text-muted-foreground">Manage fields, pricing, and availability</p>
+          <p className="text-muted-foreground">
+            Manage fields, pricing, and availability
+          </p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={loadData} disabled={loading}>
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw
+              className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
-          <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <Dialog
+            open={isCreateDialogOpen}
+            onOpenChange={setIsCreateDialogOpen}
+          >
             <DialogTrigger asChild>
               <Button onClick={resetForm}>
                 <Plus className="h-4 w-4 mr-2" />
@@ -285,7 +333,8 @@ function FieldManagement() {
               <DialogHeader>
                 <DialogTitle>Create New Field</DialogTitle>
                 <DialogDescription>
-                  Add a new field to your location. Make sure to fill in all required fields.
+                  Add a new field to your location. Make sure to fill in all
+                  required fields.
                 </DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
@@ -294,13 +343,20 @@ function FieldManagement() {
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, name: e.target.value }))
+                    }
                     placeholder="e.g., Field A, Court 1"
                   />
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="location">Location *</Label>
-                  <Select value={formData.location_id} onValueChange={(value) => setFormData(prev => ({ ...prev, location_id: value }))}>
+                  <Select
+                    value={formData.location_id}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, location_id: value }))
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select a location" />
                     </SelectTrigger>
@@ -315,7 +371,12 @@ function FieldManagement() {
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="type">Field Type *</Label>
-                  <Select value={formData.type} onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}>
+                  <Select
+                    value={formData.type}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({ ...prev, type: value }))
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select field type" />
                     </SelectTrigger>
@@ -334,7 +395,12 @@ function FieldManagement() {
                     id="price"
                     type="number"
                     value={formData.price}
-                    onChange={(e) => setFormData(prev => ({ ...prev, price: parseInt(e.target.value) || 0 }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        price: parseInt(e.target.value) || 0,
+                      }))
+                    }
                     placeholder="100000"
                     min="0"
                   />
@@ -344,7 +410,12 @@ function FieldManagement() {
                   <Textarea
                     id="description"
                     value={formData.description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        description: e.target.value,
+                      }))
+                    }
                     placeholder="Optional description of the field"
                     rows={3}
                   />
@@ -360,6 +431,7 @@ function FieldManagement() {
                       onChange={(e) => handleImageUpload(e.target.files)}
                       className="cursor-pointer"
                     />
+
                     {formData.images && formData.images.length > 0 && (
                       <div className="grid grid-cols-3 gap-2">
                         {formData.images.map((image, index) => (
@@ -369,6 +441,7 @@ function FieldManagement() {
                               alt={`Field image ${index + 1}`}
                               className="w-full h-20 object-cover rounded border"
                             />
+
                             <Button
                               variant="destructive"
                               size="sm"
@@ -385,11 +458,16 @@ function FieldManagement() {
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsCreateDialogOpen(false)}
+                >
                   Cancel
                 </Button>
                 <Button onClick={handleCreate} disabled={isSubmitting}>
-                  {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  {isSubmitting && (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  )}
                   Create Field
                 </Button>
               </DialogFooter>
@@ -418,7 +496,7 @@ function FieldManagement() {
                 handleView,
                 handleEditColumn,
                 handleDeleteColumn,
-                actionLoading
+                actionLoading,
               )}
               data={fields}
               searchKey="name"
@@ -434,7 +512,8 @@ function FieldManagement() {
           <DialogHeader>
             <DialogTitle>Edit Field</DialogTitle>
             <DialogDescription>
-              Update the field information. Make sure to fill in all required fields.
+              Update the field information. Make sure to fill in all required
+              fields.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -443,13 +522,20 @@ function FieldManagement() {
               <Input
                 id="edit-name"
                 value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, name: e.target.value }))
+                }
                 placeholder="e.g., Field A, Court 1"
               />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="edit-location">Location *</Label>
-              <Select value={formData.location_id} onValueChange={(value) => setFormData(prev => ({ ...prev, location_id: value }))}>
+              <Select
+                value={formData.location_id}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, location_id: value }))
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a location" />
                 </SelectTrigger>
@@ -464,7 +550,12 @@ function FieldManagement() {
             </div>
             <div className="grid gap-2">
               <Label htmlFor="edit-type">Field Type *</Label>
-              <Select value={formData.type} onValueChange={(value) => setFormData(prev => ({ ...prev, type: value }))}>
+              <Select
+                value={formData.type}
+                onValueChange={(value) =>
+                  setFormData((prev) => ({ ...prev, type: value }))
+                }
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select field type" />
                 </SelectTrigger>
@@ -483,7 +574,12 @@ function FieldManagement() {
                 id="edit-price"
                 type="number"
                 value={formData.price}
-                onChange={(e) => setFormData(prev => ({ ...prev, price: parseInt(e.target.value) || 0 }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    price: parseInt(e.target.value) || 0,
+                  }))
+                }
                 placeholder="100000"
                 min="0"
               />
@@ -493,7 +589,12 @@ function FieldManagement() {
               <Textarea
                 id="edit-description"
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    description: e.target.value,
+                  }))
+                }
                 placeholder="Optional description of the field"
                 rows={3}
               />
@@ -509,6 +610,7 @@ function FieldManagement() {
                   onChange={(e) => handleImageUpload(e.target.files)}
                   className="cursor-pointer"
                 />
+
                 {formData.images && formData.images.length > 0 && (
                   <div className="grid grid-cols-3 gap-2">
                     {formData.images.map((image, index) => (
@@ -518,6 +620,7 @@ function FieldManagement() {
                           alt={`Field image ${index + 1}`}
                           className="w-full h-20 object-cover rounded border"
                         />
+
                         <Button
                           variant="destructive"
                           size="sm"
@@ -534,11 +637,16 @@ function FieldManagement() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsEditDialogOpen(false)}
+            >
               Cancel
             </Button>
             <Button onClick={handleUpdate} disabled={isSubmitting}>
-              {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {isSubmitting && (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              )}
               Update Field
             </Button>
           </DialogFooter>
@@ -559,24 +667,30 @@ function FieldManagement() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm font-medium">Field Name</Label>
-                  <p className="text-sm text-muted-foreground">{viewingField.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {viewingField.name}
+                  </p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Location</Label>
                   <p className="text-sm text-muted-foreground">
-                    {locations.find(loc => loc.id === viewingField.location_id)?.name || 'Unknown Location'}
+                    {locations.find(
+                      (loc) => loc.id === viewingField.location_id,
+                    )?.name || "Unknown Location"}
                   </p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Field Type</Label>
-                  <p className="text-sm text-muted-foreground">{viewingField.type}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {viewingField.type}
+                  </p>
                 </div>
                 <div>
                   <Label className="text-sm font-medium">Price per Hour</Label>
                   <p className="text-sm text-muted-foreground">
-                    {new Intl.NumberFormat('id-ID', {
-                      style: 'currency',
-                      currency: 'IDR',
+                    {new Intl.NumberFormat("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
                     }).format(viewingField.price)}
                   </p>
                 </div>
@@ -584,11 +698,13 @@ function FieldManagement() {
               <div>
                 <Label className="text-sm font-medium">Description</Label>
                 <p className="text-sm text-muted-foreground">
-                  {viewingField.description || 'No description provided'}
+                  {viewingField.description || "No description provided"}
                 </p>
               </div>
               <div>
-                <Label className="text-sm font-medium">Images ({viewingField.images?.length || 0})</Label>
+                <Label className="text-sm font-medium">
+                  Images ({viewingField.images?.length || 0})
+                </Label>
                 {viewingField.images && viewingField.images.length > 0 ? (
                   <div className="grid grid-cols-3 gap-2 mt-2">
                     {viewingField.images.map((image, index) => (
@@ -602,18 +718,23 @@ function FieldManagement() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground mt-2">No images uploaded</p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    No images uploaded
+                  </p>
                 )}
               </div>
             </div>
           )}
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsViewDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsViewDialogOpen(false)}
+            >
               Close
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

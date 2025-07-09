@@ -8,14 +8,14 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
 } from "../../ui/sidebar";
-import { 
-  Home, 
-  Users, 
-  MapPin, 
-  Calendar, 
-  CreditCard, 
+import {
+  Home,
+  Users,
+  MapPin,
+  Calendar,
+  CreditCard,
   BarChart3,
-  Building
+  Building,
 } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
 import React from "react";
@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
 
 const AdminSidebar: React.FC = () => {
   const location = useLocation();
-  
+
   // Helper function to check if a route is active
   const isActive = (path: string) => {
     if (path === "/admin") {
@@ -47,13 +47,13 @@ const AdminSidebar: React.FC = () => {
             <SidebarGroupLabel>Dashboard</SidebarGroupLabel>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link 
+                <Link
                   to="/admin"
                   className={cn(
                     "flex items-center gap-2 px-3 py-2 rounded-md transition-colors",
-                    isActive("/admin") 
-                      ? "bg-primary text-primary-foreground" 
-                      : "hover:bg-accent hover:text-accent-foreground"
+                    isActive("/admin")
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-accent hover:text-accent-foreground",
                   )}
                 >
                   <Home className="mr-2" /> Dashboard
@@ -68,13 +68,13 @@ const AdminSidebar: React.FC = () => {
             <SidebarGroupLabel>Management</SidebarGroupLabel>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link 
+                <Link
                   to="/admin/locations"
                   className={cn(
                     "flex items-center gap-2 px-3 py-2 rounded-md transition-colors",
-                    isActive("/admin/locations") 
-                      ? "bg-primary text-primary-foreground" 
-                      : "hover:bg-accent hover:text-accent-foreground"
+                    isActive("/admin/locations")
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-accent hover:text-accent-foreground",
                   )}
                 >
                   <MapPin className="mr-2" /> Locations
@@ -83,31 +83,29 @@ const AdminSidebar: React.FC = () => {
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link 
+                <Link
                   to="/admin/fields"
                   className={cn(
                     "flex items-center gap-2 px-3 py-2 rounded-md transition-colors",
-                    isActive("/admin/fields") 
-                      ? "bg-primary text-primary-foreground" 
-                      : "hover:bg-accent hover:text-accent-foreground"
+                    isActive("/admin/fields")
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-accent hover:text-accent-foreground",
                   )}
                 >
-                  <Building className="mr-2" /> 
-                  <span className="flex items-center gap-2">
-                    Fields
-                  </span>
+                  <Building className="mr-2" />
+                  <span className="flex items-center gap-2">Fields</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link 
+                <Link
                   to="/admin/bookings"
                   className={cn(
                     "flex items-center gap-2 px-3 py-2 rounded-md transition-colors",
-                    isActive("/admin/bookings") 
-                      ? "bg-primary text-primary-foreground" 
-                      : "hover:bg-accent hover:text-accent-foreground"
+                    isActive("/admin/bookings")
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-accent hover:text-accent-foreground",
                   )}
                 >
                   <Calendar className="mr-2" /> Bookings
@@ -116,13 +114,13 @@ const AdminSidebar: React.FC = () => {
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link 
+                <Link
                   to="/admin/users"
                   className={cn(
                     "flex items-center gap-2 px-3 py-2 rounded-md transition-colors",
-                    isActive("/admin/users") 
-                      ? "bg-primary text-primary-foreground" 
-                      : "hover:bg-accent hover:text-accent-foreground"
+                    isActive("/admin/users")
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-accent hover:text-accent-foreground",
                   )}
                 >
                   <Users className="mr-2" /> Users
@@ -137,13 +135,13 @@ const AdminSidebar: React.FC = () => {
             <SidebarGroupLabel>Financial</SidebarGroupLabel>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link 
+                <Link
                   to="/admin/payments"
                   className={cn(
                     "flex items-center gap-2 px-3 py-2 rounded-md transition-colors",
-                    isActive("/admin/payments") 
-                      ? "bg-primary text-primary-foreground" 
-                      : "hover:bg-accent hover:text-accent-foreground"
+                    isActive("/admin/payments")
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-accent hover:text-accent-foreground",
                   )}
                 >
                   <CreditCard className="mr-2" /> Payments
@@ -158,13 +156,13 @@ const AdminSidebar: React.FC = () => {
             <SidebarGroupLabel>Reports</SidebarGroupLabel>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <Link 
+                <Link
                   to="/admin/analytics"
                   className={cn(
                     "flex items-center gap-2 px-3 py-2 rounded-md transition-colors",
-                    isActive("/admin/analytics") 
-                      ? "bg-primary text-primary-foreground" 
-                      : "hover:bg-accent hover:text-accent-foreground"
+                    isActive("/admin/analytics")
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-accent hover:text-accent-foreground",
                   )}
                 >
                   <BarChart3 className="mr-2" /> Analytics

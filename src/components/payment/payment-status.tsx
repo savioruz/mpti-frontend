@@ -1,8 +1,13 @@
-import React from 'react';
+import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, CreditCard, AlertCircle, CheckCircle } from 'lucide-react';
-import { formatCurrency, getPaymentStatusColor, getPaymentStatusText, type PaymentStatus } from '@/lib/payment';
+import { Clock, CreditCard, AlertCircle, CheckCircle } from "lucide-react";
+import {
+  formatCurrency,
+  getPaymentStatusColor,
+  getPaymentStatusText,
+  type PaymentStatus,
+} from "@/lib/payment";
 
 interface PaymentStatusProps {
   status: PaymentStatus;
@@ -19,7 +24,7 @@ export const PaymentStatusBadge: React.FC<PaymentStatusProps> = ({
   paymentUrl,
   className = "",
   showPayButton = false,
-  onPayNow
+  onPayNow,
 }) => {
   const getStatusIcon = (status: PaymentStatus) => {
     switch (status) {
@@ -38,7 +43,7 @@ export const PaymentStatusBadge: React.FC<PaymentStatusProps> = ({
 
   const handlePayNow = () => {
     if (paymentUrl) {
-      window.open(paymentUrl, '_blank');
+      window.open(paymentUrl, "_blank");
     }
     if (onPayNow) {
       onPayNow();
@@ -47,17 +52,17 @@ export const PaymentStatusBadge: React.FC<PaymentStatusProps> = ({
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      <Badge className={`${getPaymentStatusColor(status)} flex items-center gap-1`}>
+      <Badge
+        className={`${getPaymentStatusColor(status)} flex items-center gap-1`}
+      >
         {getStatusIcon(status)}
         {getPaymentStatusText(status)}
       </Badge>
-      
-      <span className="text-sm font-medium">
-        {formatCurrency(amount)}
-      </span>
-      
+
+      <span className="text-sm font-medium">{formatCurrency(amount)}</span>
+
       {showPayButton && status === "PENDING" && paymentUrl && (
-        <Button 
+        <Button
           size="sm"
           onClick={handlePayNow}
           className="flex items-center gap-1"
@@ -85,33 +90,37 @@ export const PaymentSummary: React.FC<PaymentSummaryProps> = ({
   paymentUrl,
   orderId,
   expiryDate,
-  className = ""
+  className = "",
 }) => {
-  const isPaymentExpired = expiryDate ? new Date(expiryDate) < new Date() : false;
+  const isPaymentExpired = expiryDate
+    ? new Date(expiryDate) < new Date()
+    : false;
 
   return (
     <div className={`space-y-2 ${className}`}>
       <div className="flex items-center justify-between">
         <span className="text-sm text-gray-600">Payment Status</span>
-        <PaymentStatusBadge 
-          status={status} 
-          amount={amount} 
+        <PaymentStatusBadge
+          status={status}
+          amount={amount}
           paymentUrl={paymentUrl}
           showPayButton={status === "PENDING" && !isPaymentExpired}
         />
       </div>
-      
+
       {orderId && (
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-600">Order ID</span>
           <span className="text-xs font-mono">{orderId}</span>
         </div>
       )}
-      
+
       {expiryDate && status === "PENDING" && (
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-600">Expires</span>
-          <span className={`text-xs ${isPaymentExpired ? 'text-red-600' : 'text-gray-900'}`}>
+          <span
+            className={`text-xs ${isPaymentExpired ? "text-red-600" : "text-gray-900"}`}
+          >
             {new Date(expiryDate).toLocaleString()}
           </span>
         </div>

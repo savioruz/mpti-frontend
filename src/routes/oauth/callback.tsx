@@ -43,7 +43,7 @@ function OAuthCallbackPage() {
         saveAuthTokens(accessToken, refreshToken);
 
         // Verify the state parameter matches what we stored (optional)
-        const savedState = localStorage.getItem('oauth_state');
+        const savedState = localStorage.getItem("oauth_state");
         if (savedState && state && savedState !== state) {
           toast.dismiss(loadingToast);
           toast.error("Authentication failed: Invalid state parameter");
@@ -52,7 +52,7 @@ function OAuthCallbackPage() {
         }
 
         // Clean up state after use
-        localStorage.removeItem('oauth_state');
+        localStorage.removeItem("oauth_state");
 
         // Dismiss loading toast and show success
         toast.dismiss(loadingToast);

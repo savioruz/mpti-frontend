@@ -1,14 +1,29 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import type { User } from "@/lib/user";
-import { getUserLevelLabel, getUserLevelColor, useUpdateUserRole } from "@/lib/user";
+import {
+  getUserLevelLabel,
+  getUserLevelColor,
+  useUpdateUserRole,
+} from "@/lib/user";
 
 interface UserDetailsDialogProps {
   user: User | null;
@@ -16,7 +31,11 @@ interface UserDetailsDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function UserDetailsDialog({ user, open, onOpenChange }: UserDetailsDialogProps) {
+export function UserDetailsDialog({
+  user,
+  open,
+  onOpenChange,
+}: UserDetailsDialogProps) {
   const [selectedLevel, setSelectedLevel] = useState<"1" | "2" | "9">();
   const updateUserRole = useUpdateUserRole();
 
@@ -39,9 +58,9 @@ export function UserDetailsDialog({ user, open, onOpenChange }: UserDetailsDialo
 
   const getInitials = (name: string) => {
     return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
       .toUpperCase();
   };
 
@@ -51,7 +70,7 @@ export function UserDetailsDialog({ user, open, onOpenChange }: UserDetailsDialo
         <DialogHeader>
           <DialogTitle>User Details</DialogTitle>
         </DialogHeader>
-        
+
         <div className="space-y-6">
           {/* User Profile Section */}
           <div className="flex items-start space-x-4">
@@ -61,7 +80,7 @@ export function UserDetailsDialog({ user, open, onOpenChange }: UserDetailsDialo
                 {getInitials(user.full_name)}
               </AvatarFallback>
             </Avatar>
-            
+
             <div className="flex-1 space-y-2">
               <div className="flex items-center space-x-2">
                 <h3 className="text-xl font-semibold">{user.full_name}</h3>
@@ -69,7 +88,10 @@ export function UserDetailsDialog({ user, open, onOpenChange }: UserDetailsDialo
                   {getUserLevelLabel(user.level)}
                 </Badge>
                 {user.is_verified && (
-                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                  <Badge
+                    variant="outline"
+                    className="bg-green-50 text-green-700 border-green-200"
+                  >
                     Verified
                   </Badge>
                 )}
@@ -83,12 +105,18 @@ export function UserDetailsDialog({ user, open, onOpenChange }: UserDetailsDialo
           {/* User Information */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="font-medium text-sm text-muted-foreground">User ID</Label>
-              <p className="text-sm font-mono bg-muted p-2 rounded">{user.id}</p>
+              <Label className="font-medium text-sm text-muted-foreground">
+                User ID
+              </Label>
+              <p className="text-sm font-mono bg-muted p-2 rounded">
+                {user.id}
+              </p>
             </div>
-            
+
             <div>
-              <Label className="font-medium text-sm text-muted-foreground">Email Status</Label>
+              <Label className="font-medium text-sm text-muted-foreground">
+                Email Status
+              </Label>
               <p className="text-sm">
                 {user.is_verified ? (
                   <span className="text-green-600">Verified</span>
@@ -97,19 +125,22 @@ export function UserDetailsDialog({ user, open, onOpenChange }: UserDetailsDialo
                 )}
               </p>
             </div>
-            
+
             <div>
-              <Label className="font-medium text-sm text-muted-foreground">Last Login</Label>
+              <Label className="font-medium text-sm text-muted-foreground">
+                Last Login
+              </Label>
               <p className="text-sm">
-                {user.last_login 
+                {user.last_login
                   ? new Date(user.last_login).toLocaleString()
-                  : "Never"
-                }
+                  : "Never"}
               </p>
             </div>
-            
+
             <div>
-              <Label className="font-medium text-sm text-muted-foreground">Member Since</Label>
+              <Label className="font-medium text-sm text-muted-foreground">
+                Member Since
+              </Label>
               <p className="text-sm">
                 {new Date(user.created_at).toLocaleDateString()}
               </p>
@@ -123,12 +154,16 @@ export function UserDetailsDialog({ user, open, onOpenChange }: UserDetailsDialo
             <Label className="font-medium">Update User Role</Label>
             <div className="flex items-center space-x-4">
               <div className="flex-1">
-                <Select 
-                  value={selectedLevel} 
-                  onValueChange={(value) => setSelectedLevel(value as "1" | "2" | "9")}
+                <Select
+                  value={selectedLevel}
+                  onValueChange={(value) =>
+                    setSelectedLevel(value as "1" | "2" | "9")
+                  }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder={`Current: ${getUserLevelLabel(user.level)}`} />
+                    <SelectValue
+                      placeholder={`Current: ${getUserLevelLabel(user.level)}`}
+                    />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="1">User (Level 1)</SelectItem>
@@ -137,18 +172,30 @@ export function UserDetailsDialog({ user, open, onOpenChange }: UserDetailsDialo
                   </SelectContent>
                 </Select>
               </div>
-              <Button 
+              <Button
                 onClick={handleUpdateRole}
-                disabled={updateUserRole.isPending || !selectedLevel || selectedLevel === user.level}
+                disabled={
+                  updateUserRole.isPending ||
+                  !selectedLevel ||
+                  selectedLevel === user.level
+                }
               >
                 {updateUserRole.isPending ? "Updating..." : "Update Role"}
               </Button>
             </div>
-            
+
             <div className="text-xs text-muted-foreground">
-              <p><strong>User (Level 1):</strong> Regular user with basic permissions</p>
-              <p><strong>Staff (Level 2):</strong> Staff member with extended permissions</p>
-              <p><strong>Admin (Level 9):</strong> Administrator with full access</p>
+              <p>
+                <strong>User (Level 1):</strong> Regular user with basic
+                permissions
+              </p>
+              <p>
+                <strong>Staff (Level 2):</strong> Staff member with extended
+                permissions
+              </p>
+              <p>
+                <strong>Admin (Level 9):</strong> Administrator with full access
+              </p>
             </div>
           </div>
         </div>

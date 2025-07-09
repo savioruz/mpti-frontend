@@ -1,7 +1,7 @@
-import type { ColumnDef } from "@tanstack/react-table"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { 
+import type { ColumnDef } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -11,30 +11,29 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-import { Edit, Trash2, Eye, ImageIcon } from "lucide-react"
-import type { Field } from "@/lib/field"
-import type { Location } from "@/lib/location"
+} from "@/components/ui/alert-dialog";
+import { Edit, Trash2, Eye, ImageIcon } from "lucide-react";
+import type { Field } from "@/lib/field";
+import type { Location } from "@/lib/location";
 
 export function createFieldColumns(
   locations: Location[],
   onView: (field: Field) => void,
   onEdit: (field: Field) => void,
   onDelete: (fieldId: string) => void,
-  actionLoading: boolean
+  actionLoading: boolean,
 ): ColumnDef<Field>[] {
-  
   const getLocationName = (locationId: string) => {
-    const location = locations.find(loc => loc.id === locationId)
-    return location?.name || 'Unknown Location'
-  }
+    const location = locations.find((loc) => loc.id === locationId);
+    return location?.name || "Unknown Location";
+  };
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-    }).format(price)
-  }
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    }).format(price);
+  };
 
   return [
     {
@@ -61,27 +60,21 @@ export function createFieldColumns(
     {
       accessorKey: "price",
       header: "Price/Hour",
-      cell: ({ row }) => (
-        <div>{formatPrice(row.getValue("price"))}</div>
-      ),
+      cell: ({ row }) => <div>{formatPrice(row.getValue("price"))}</div>,
     },
     {
       accessorKey: "description",
       header: "Description",
       cell: ({ row }) => {
-        const description = row.getValue("description") as string
-        return (
-          <div className="max-w-xs truncate">
-            {description || '-'}
-          </div>
-        )
+        const description = row.getValue("description") as string;
+        return <div className="max-w-xs truncate">{description || "-"}</div>;
       },
     },
     {
       accessorKey: "images",
       header: "Images",
       cell: ({ row }) => {
-        const images = row.getValue("images") as string[] || []
+        const images = (row.getValue("images") as string[]) || [];
         return (
           <div className="flex items-center gap-1">
             <ImageIcon className="h-4 w-4" />
@@ -89,15 +82,15 @@ export function createFieldColumns(
               {images.length}
             </span>
           </div>
-        )
+        );
       },
     },
     {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => {
-        const field = row.original
-        
+        const field = row.original;
+
         return (
           <div className="flex items-center gap-2">
             <Button
@@ -133,7 +126,8 @@ export function createFieldColumns(
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This will permanently delete the field "{field.name}". This action cannot be undone.
+                    This will permanently delete the field "{field.name}". This
+                    action cannot be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -145,8 +139,8 @@ export function createFieldColumns(
               </AlertDialogContent>
             </AlertDialog>
           </div>
-        )
+        );
       },
     },
-  ]
+  ];
 }

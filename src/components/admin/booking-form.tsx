@@ -1,97 +1,110 @@
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { format, parse } from "date-fns"
-import { CalendarIcon, ClockIcon } from "lucide-react"
-import { Combobox } from "@/components/ui/combobox"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { toast } from "sonner"
-import { getAllFields } from "@/lib/field"
-import { createBooking, type CreateBookingRequest } from "@/lib/booking"
-import type { Field } from "@/lib/field"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format, parse } from "date-fns";
+import { CalendarIcon, ClockIcon } from "lucide-react";
+import { Combobox } from "@/components/ui/combobox";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
+import { getAllFields } from "@/lib/field";
+import { createBooking, type CreateBookingRequest } from "@/lib/booking";
+import type { Field } from "@/lib/field";
 
 interface BookingFormProps {
-  onSuccess: () => void
-  onCancel: () => void
+  onSuccess: () => void;
+  onCancel: () => void;
 }
 
 export function BookingForm({ onSuccess, onCancel }: BookingFormProps) {
-  const [loading, setLoading] = useState(false)
-  const [fields, setFields] = useState<Field[]>([])
+  const [loading, setLoading] = useState(false);
+  const [fields, setFields] = useState<Field[]>([]);
   const [formData, setFormData] = useState<CreateBookingRequest>({
     field_id: "",
     date: "",
     start_time: "",
     duration: 1,
     cash: false,
-  })
+  });
 
   useEffect(() => {
     const fetchFields = async () => {
       try {
-        const response = await getAllFields()
-        setFields(response.data.fields)
+        const response = await getAllFields();
+        setFields(response.data.fields);
       } catch (error) {
-        toast.error("Failed to fetch fields")
+        toast.error("Failed to fetch fields");
       }
-    }
-    fetchFields()
-  }, [])
+    };
+    fetchFields();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
+    e.preventDefault();
+
     // Validate required fields
     if (!formData.field_id || !formData.date) {
-      toast.error("Please fill in all required fields")
-      return
+      toast.error("Please fill in all required fields");
+      return;
     }
-    
+
     // Validate start time
     if (!formData.start_time) {
-      toast.error("Please enter a start time")
-      return
+      toast.error("Please enter a start time");
+      return;
     }
-    
+
     // Format time properly before submission
-    const hourStr = formData.start_time.split(':')[0];
+    const hourStr = formData.start_time.split(":")[0];
     const hour = parseInt(hourStr);
-    
+
     if (isNaN(hour) || hour < 0 || hour > 23) {
-      toast.error("Please enter a valid hour (0-23)")
-      return
+      toast.error("Please enter a valid hour (0-23)");
+      return;
     }
-    
+
     // Ensure time is properly formatted
-    const formattedTime = `${hour.toString().padStart(2, '0')}:00`;
+    const formattedTime = `${hour.toString().padStart(2, "0")}:00`;
     const updatedFormData = {
       ...formData,
-      start_time: formattedTime
+      start_time: formattedTime,
     };
-    
-    setLoading(true)
+
+    setLoading(true);
 
     try {
-      await createBooking(updatedFormData)
-      toast.success("Booking created successfully")
-      onSuccess()
+      await createBooking(updatedFormData);
+      toast.success("Booking created successfully");
+      onSuccess();
     } catch (error) {
-      toast.error("Failed to create booking")
+      toast.error("Failed to create booking");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const handleFieldChange = (field: keyof CreateBookingRequest, value: string | number | boolean) => {
-    setFormData(prev => ({
+  const handleFieldChange = (
+    field: keyof CreateBookingRequest,
+    value: string | number | boolean,
+  ) => {
+    setFormData((prev) => ({
       ...prev,
       [field]: value,
-    }))
-  }
+    }));
+  };
 
   return (
     <Card className="w-full max-w-2xl">
@@ -105,18 +118,19 @@ export function BookingForm({ onSuccess, onCancel }: BookingFormProps) {
               <Label htmlFor="field_id">Field</Label>
               <div className="mt-1">
                 <Combobox
-                  options={fields.map(field => ({
+                  options={fields.map((field) => ({
                     value: field.id,
-                    label: `${field.name} - Rp ${field.price.toLocaleString()}`
+                    label: `${field.name} - Rp ${field.price.toLocaleString()}`,
                   }))}
                   value={formData.field_id}
-                  onValueChange={(value) => handleFieldChange("field_id", value)}
+                  onValueChange={(value) =>
+                    handleFieldChange("field_id", value)
+                  }
                   placeholder="Select field"
                   emptyMessage="No fields found."
                 />
               </div>
             </div>
-
             <div>
               <Label htmlFor="date">Date</Label>
               <div className="relative mt-1">
@@ -128,9 +142,14 @@ export function BookingForm({ onSuccess, onCancel }: BookingFormProps) {
                       id="date"
                     >
                       {formData.date ? (
-                        format(parse(formData.date, "yyyy-MM-dd", new Date()), "PPP")
+                        format(
+                          parse(formData.date, "yyyy-MM-dd", new Date()),
+                          "PPP",
+                        )
                       ) : (
-                        <span className="text-muted-foreground">Select a date</span>
+                        <span className="text-muted-foreground">
+                          Select a date
+                        </span>
                       )}
                       <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
@@ -138,19 +157,26 @@ export function BookingForm({ onSuccess, onCancel }: BookingFormProps) {
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={formData.date ? parse(formData.date, "yyyy-MM-dd", new Date()) : undefined}
+                      selected={
+                        formData.date
+                          ? parse(formData.date, "yyyy-MM-dd", new Date())
+                          : undefined
+                      }
                       onSelect={(date) => {
                         if (date) {
                           handleFieldChange("date", format(date, "yyyy-MM-dd"));
                         }
                       }}
-                      disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                      disabled={(date) =>
+                        date < new Date(new Date().setHours(0, 0, 0, 0))
+                      }
                       initialFocus
                     />
                   </PopoverContent>
                 </Popover>
               </div>
-            </div>              <div>
+            </div>{" "}
+            <div>
               <Label htmlFor="start_time">Start Time (hour)</Label>
               <div className="mt-1">
                 <div className="relative">
@@ -160,35 +186,48 @@ export function BookingForm({ onSuccess, onCancel }: BookingFormProps) {
                     inputMode="numeric"
                     pattern="[0-9]*"
                     placeholder="Enter hour (0-23)"
-                    value={formData.start_time ? formData.start_time.split(':')[0] : ''}
+                    value={
+                      formData.start_time
+                        ? formData.start_time.split(":")[0]
+                        : ""
+                    }
                     onChange={(e) => {
                       const hour = e.target.value.trim();
                       // Only allow numbers and ensure it's within 0-23 range
-                      if (hour === '' || (/^\d+$/.test(hour) && parseInt(hour) >= 0 && parseInt(hour) <= 23)) {
-                        const formattedTime = hour ? `${hour.padStart(2, '0')}:00` : '';
+                      if (
+                        hour === "" ||
+                        (/^\d+$/.test(hour) &&
+                          parseInt(hour) >= 0 &&
+                          parseInt(hour) <= 23)
+                      ) {
+                        const formattedTime = hour
+                          ? `${hour.padStart(2, "0")}:00`
+                          : "";
                         handleFieldChange("start_time", formattedTime);
                       }
                     }}
                     className="pr-10"
                   />
+
                   <ClockIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 opacity-50 pointer-events-none" />
                 </div>
               </div>
               {formData.start_time && (
                 <p className="text-xs text-blue-600 mt-1">
-                  Selected time: {formData.start_time.split(':')[0]}:00
+                  Selected time: {formData.start_time.split(":")[0]}:00
                 </p>
               )}
               <p className="text-xs text-muted-foreground mt-1">
                 Enter hour in 24-hour format (0-23)
               </p>
             </div>
-
             <div>
               <Label htmlFor="duration">Duration (hours)</Label>
               <Select
                 value={formData.duration.toString()}
-                onValueChange={(value) => handleFieldChange("duration", parseInt(value))}
+                onValueChange={(value) =>
+                  handleFieldChange("duration", parseInt(value))
+                }
                 required
               >
                 <SelectTrigger>
@@ -214,6 +253,7 @@ export function BookingForm({ onSuccess, onCancel }: BookingFormProps) {
               onChange={(e) => handleFieldChange("cash", e.target.checked)}
               className="h-4 w-4"
             />
+
             <Label htmlFor="cash">Cash Payment</Label>
           </div>
 
@@ -228,5 +268,5 @@ export function BookingForm({ onSuccess, onCancel }: BookingFormProps) {
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

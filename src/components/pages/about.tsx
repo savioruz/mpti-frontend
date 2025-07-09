@@ -41,15 +41,16 @@ function HeroContent() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.8, ease: "easeInOut" }}
       >
-        Alkadi Group selalu berupaya memberikan produk berkualitas terbaik kepada customer. Kami juga menyediakan gedung serbaguna untuk olahraga dan acara seperti pernikahan, wisuda, dan lainnya.
+        Alkadi Group selalu berupaya memberikan produk berkualitas terbaik
+        kepada customer. Kami juga menyediakan gedung serbaguna untuk olahraga
+        dan acara seperti pernikahan, wisuda, dan lainnya.
       </motion.p>
       <motion.div
         className="flex flex-col sm:flex-row gap-4 pt-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.8, ease: "easeInOut" }}
-      >
-      </motion.div>
+      ></motion.div>
     </div>
   );
 }
