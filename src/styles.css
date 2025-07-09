@@ -137,3 +137,25 @@ code {
     @apply bg-background text-foreground;
   }
 }
+
+/* Prevent any scaling effects on field cards */
+@layer components {
+  .field-card {
+    transform: none !important;
+    scale: 1 !important;
+    box-sizing: border-box;
+    backface-visibility: hidden;
+    will-change: box-shadow, border-color;
+  }
+  
+  .field-card:hover,
+  .field-card:focus,
+  .field-card:active {
+    transform: none !important;
+    scale: 1 !important;
+  }
+  
+  .field-card * {
+    box-sizing: border-box;
+  }
+}
