@@ -16,7 +16,7 @@ type Link = {
 export const publicLinks: Record<string, Link> = {
     home: { to: '/' },
     fields: { to: '/fields' },
-    locations: { to: '/locations' },
+    location: { to: '/location' },
     about: { to: '/about' },
     contact: { to: '/contact' },
     tos: { to: '/tos' },

@@ -1,6 +1,7 @@
 import { createRootRoute, Outlet, useLocation } from "@tanstack/react-router";
 
 import Header from "../components/common/header.tsx";
+import Footer from "../components/common/footer.tsx";
 import { ThemeProvider } from "@/components/ui/theme-provider.tsx";
 import { Toaster } from "@/components/ui/sonner.tsx";
 
@@ -12,12 +13,15 @@ export const Route = createRootRoute({
     return (
       <>
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <main
-            className={isAdminRoute ? "" : "flex flex-col container mx-auto"}
-          >
-            <Header />
-            <Outlet />
-          </main>
+          <div className="min-h-screen flex flex-col">
+            <main
+              className={isAdminRoute ? "flex-1" : "flex flex-col container mx-auto flex-1"}
+            >
+              <Header />
+              <Outlet />
+            </main>
+            {!isAdminRoute && <Footer />}
+          </div>
           <Toaster position="top-right" richColors={true} />
         </ThemeProvider>
       </>

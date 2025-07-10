@@ -6,7 +6,8 @@ type NavLink = {
 }
 
 export const publicNavLink: NavLink[] = [
-    { to: publicLinks.fields.to, label: 'Jadwal Lapangan' },
-    { to: publicLinks.about.to, label: 'Tentang Kami' },
-    { to: publicLinks.contact.to, label: 'Kontak Kami' },
+    { to: publicLinks.fields.to, label: 'Book Court' },
+    { to: publicLinks.about.to, label: 'About Us' },
+    { to: publicLinks.contact.to, label: 'Contact' },
+    { to: publicLinks.location.to, label: 'Location' },
 ]

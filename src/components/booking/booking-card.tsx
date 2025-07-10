@@ -36,7 +36,7 @@ export const BookingCard: React.FC<BookingCardProps> = ({
       case "CANCELLED":
         return "bg-red-100 text-red-800 border-red-300 dark:bg-red-950/30 dark:text-red-400 dark:border-red-700";
       case "COMPLETED":
-        return "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-950/30 dark:text-blue-400 dark:border-blue-700";
+        return "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-700";
       default:
         return "bg-gray-100 text-gray-800 border-gray-300 dark:bg-gray-950/30 dark:text-gray-400 dark:border-gray-700";
     }
