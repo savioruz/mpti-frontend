@@ -55,6 +55,8 @@ export const API_ROUTES = {
     login: `${API_BASE_URL}/auth/login`,
     register: `${API_BASE_URL}/auth/register`,
     forgotPassword: `${API_BASE_URL}/auth/forgot-password`,
+    verifyEmail: `${API_BASE_URL}/auth/verify-email`,
+    resetPassword: `${API_BASE_URL}/auth/reset-password`,
   },
   oauth: {
     google: {

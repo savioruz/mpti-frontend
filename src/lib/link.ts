@@ -23,5 +23,5 @@ export const publicLinks: Record<string, Link> = {
     privacyPolicy: { to: '/privacy-policy' },
     login: { to: '/auth/login' },
     register: { to: '/auth/register' },
-    forgotPassword: { to: '/forgot-password' },
+    forgotPassword: { to: '/auth/forgot-password' },
 }

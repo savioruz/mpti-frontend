@@ -25,6 +25,33 @@ export interface UserProfileResponse {
   data: UserProfile;
 }
 
+// Additional request/response types for email verification and password reset
+export interface ForgotPasswordRequest {
+  email: string;
+}
+
+export interface ForgotPasswordResponse {
+  message: string;
+}
+
+export interface ResetPasswordRequest {
+  token: string;
+  password: string;
+}
+
+export interface ResetPasswordResponse {
+  message: string;
+}
+
+export interface ValidateResetTokenResponse {
+  message: string;
+  valid: boolean;
+}
+
+export interface EmailVerificationResponse {
+  message: string;
+}
+
 // Login mutation hook
 export const useLogin = () => {
   return useMutation({
@@ -58,6 +85,88 @@ export const useRegister = () => {
         throw error;
       }
     },
+  });
+};
+
+// Forgot password mutation hook
+export const useForgotPassword = () => {
+  return useMutation({
+    mutationFn: async (userData: ForgotPasswordRequest) => {
+      try {
+        const { data } = await API.post(API_ROUTES.auth.forgotPassword, userData);
+        return data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const message = error.response?.data?.message || 'Failed to send reset email';
+          throw new Error(message);
+        }
+        throw error;
+      }
+    },
+  });
+};
+
+// Reset password mutation hook
+export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: async (userData: ResetPasswordRequest) => {
+      try {
+        const { data } = await API.post(API_ROUTES.auth.resetPassword, userData);
+        return data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const message = error.response?.data?.message || 'Failed to reset password';
+          throw new Error(message);
+        }
+        throw error;
+      }
+    },
+  });
+};
+
+// Validate reset token query hook
+export const useValidateResetToken = (token: string | null) => {
+  return useQuery({
+    queryKey: ['validate-reset-token', token],
+    queryFn: async () => {
+      if (!token) throw new Error('No token provided');
+
+      try {
+        const { data } = await API.get(`${API_ROUTES.auth.resetPassword}?token=${token}`);
+        return data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const message = error.response?.data?.message || 'Invalid or expired token';
+          throw new Error(message);
+        }
+        throw error;
+      }
+    },
+    enabled: !!token,
+    retry: false,
+  });
+};
+
+// Email verification query hook
+export const useVerifyEmail = (token: string | null) => {
+  return useQuery({
+    queryKey: ['verify-email', token],
+    queryFn: async () => {
+      if (!token) throw new Error('No verification token provided');
+
+      try {
+        const { data } = await API.get(`${API_ROUTES.auth.verifyEmail}?token=${token}`);
+        return data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          const message = error.response?.data?.message || 'Invalid or expired verification token';
+          throw new Error(message);
+        }
+        throw error;
+      }
+    },
+    enabled: !!token,
+    retry: false,
   });
 };
 
