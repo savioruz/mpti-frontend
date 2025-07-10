@@ -13,7 +13,7 @@ export const Route = createRootRoute({
     return (
       <>
         <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <div className="min-h-screen flex flex-col">
+          <div className="min-h-screen flex flex-col px-4 md:px-0">
             <main
               className={isAdminRoute ? "flex-1" : "flex flex-col container mx-auto flex-1"}
             >
