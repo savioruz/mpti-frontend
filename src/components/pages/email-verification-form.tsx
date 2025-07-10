@@ -42,6 +42,45 @@ export function EmailVerificationForm({
 
   // Show error if verification failed
   if (error) {
+    let errorMessage = "The verification link is invalid or has expired.";
+    
+    if ((error as any)?.response?.status) {
+      const status = (error as any).response.status;
+      const responseMessage = (error as any).response?.data?.message || (error as any).response?.data?.detail;
+      
+      switch (status) {
+        case 400:
+          errorMessage = "Invalid verification token format.";
+          break;
+        case 401:
+          errorMessage = "Verification token has expired. Please request a new verification email.";
+          break;
+        case 404:
+          errorMessage = "Invalid or expired verification token.";
+          break;
+        case 409:
+          errorMessage = "This email has already been verified.";
+          break;
+        case 422:
+          errorMessage = "Invalid verification data provided.";
+          break;
+        case 429:
+          errorMessage = "Too many verification attempts. Please try again later.";
+          break;
+        case 500:
+          errorMessage = "Server error. Please try again later.";
+          break;
+        default:
+          if (status >= 400 && status < 500) {
+            errorMessage = responseMessage || "Email verification failed. Please try again.";
+          } else {
+            errorMessage = "Email verification failed. Please try again later.";
+          }
+      }
+    } else if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    
     return (
       <div className={cn("flex flex-col gap-6", className)} {...props}>
         <Card>
@@ -56,7 +95,7 @@ export function EmailVerificationForm({
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-sm text-muted-foreground text-center">
-              {error instanceof Error ? error.message : "The verification link is invalid or has expired."}
+              {errorMessage}
             </p>
             <p className="text-sm text-muted-foreground text-center">
               Please check your email for a new verification link or contact support if you continue to have issues.

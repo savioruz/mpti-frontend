@@ -61,7 +61,7 @@ export const useLogin = () => {
         return data;
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          const message = error.response?.data?.message || 'Failed to login';
+          const message = error.response?.data?.error || 'Failed to login';
           throw new Error(message);
         }
         throw error;

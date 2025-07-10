@@ -32,10 +32,50 @@ export function ResetPasswordForm({
   const [isPasswordReset, setIsPasswordReset] = useState(false);
   
   const search = useSearch({ from: "/auth/reset-password" });
-  const token = (search as any)?.token || "";
+  const token = search?.token || "";
   
   const resetPasswordMutation = useResetPassword();
   const { data: tokenValidation, isLoading: isValidating, error: tokenError } = useValidateResetToken(token);
+
+  // Show no token message if token is missing
+  if (!token) {
+    return (
+      <div className={cn("flex flex-col gap-6", className)} {...props}>
+        <Card>
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/20">
+              <XCircle className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+            </div>
+            <CardTitle className="text-xl">Reset Token Required</CardTitle>
+            <CardDescription>
+              No reset token was provided in the URL.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground text-center">
+              Please use the reset link from your email, or request a new password reset.
+            </p>
+            <Button
+              asChild
+              className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
+            >
+              <Link to="/auth/forgot-password">
+                Request Password Reset
+              </Link>
+            </Button>
+            <div className="text-center">
+              <Link
+                to={publicLinks.login.to}
+                className="text-sm text-emerald-600 hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
+              >
+                Back to Login
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
@@ -67,9 +107,45 @@ export function ResetPasswordForm({
       });
       setIsPasswordReset(true);
       toast.success(response.data.message || "Password reset successful");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Reset password failed:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to reset password");
+      
+      // Handle different HTTP status codes
+      if (error?.response?.status) {
+        const status = error.response.status;
+        const errorMessage = error.response?.data?.message || error.response?.data?.detail || "An error occurred";
+        
+        switch (status) {
+          case 400:
+            toast.error("Invalid reset token or password. Please try again.");
+            break;
+          case 401:
+            toast.error("Reset token has expired. Please request a new password reset.");
+            break;
+          case 404:
+            toast.error("Invalid or expired reset token. Please request a new password reset.");
+            break;
+          case 422:
+            toast.error("Invalid password format. Please check your password requirements.");
+            break;
+          case 429:
+            toast.error("Too many reset attempts. Please try again later.");
+            break;
+          case 500:
+            toast.error("Server error. Please try again later.");
+            break;
+          default:
+            if (status >= 400 && status < 500) {
+              toast.error(errorMessage || "Failed to reset password. Please try again.");
+            } else {
+              toast.error("Failed to reset password. Please try again later.");
+            }
+        }
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to reset password. Please check your connection and try again.");
+      }
     }
   };
 

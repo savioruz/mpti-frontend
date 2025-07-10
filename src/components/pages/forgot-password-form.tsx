@@ -38,9 +38,42 @@ export function ForgotPasswordForm({
       const response = await forgotPasswordMutation.mutateAsync({ email });
       setIsEmailSent(true);
       toast.success(response.data.message || "Password reset email sent");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Forgot password failed:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to send reset email");
+      
+      // Handle different HTTP status codes
+      if (error?.response?.status) {
+        const status = error.response.status;
+        const errorMessage = error.response?.data?.message || error.response?.data?.detail || "An error occurred";
+        
+        switch (status) {
+          case 400:
+            toast.error("Invalid email format. Please enter a valid email address.");
+            break;
+          case 404:
+            toast.error("No account found with this email address.");
+            break;
+          case 422:
+            toast.error("Invalid email provided. Please check your input.");
+            break;
+          case 429:
+            toast.error("Too many reset attempts. Please try again later.");
+            break;
+          case 500:
+            toast.error("Server error. Please try again later.");
+            break;
+          default:
+            if (status >= 400 && status < 500) {
+              toast.error(errorMessage || "Failed to send reset email. Please try again.");
+            } else {
+              toast.error("Failed to send reset email. Please try again later.");
+            }
+        }
+      } else if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to send reset email. Please check your connection and try again.");
+      }
     }
   };
 
