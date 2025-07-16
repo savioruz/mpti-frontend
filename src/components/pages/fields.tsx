@@ -94,8 +94,10 @@ export function DatetimePickerV1() {
           // Show time selections again when field or date changes
           setShowStartTimeSelection(true);
           setShowEndTimeSelection(true);
+          
         } catch (error) {
-          toast.error("Failed to load booked slots");
+          toast.error("Failed to load slot availability. Please try again.");
+          setBookedSlots([]);
         } finally {
           setLoading((prev) => ({ ...prev, slots: false }));
         }
@@ -231,6 +233,62 @@ export function DatetimePickerV1() {
           : slot.start_time.substring(0, 5);
       return slotStartTime === startTime;
     });
+  };
+
+  const isTimeSlotPast = (timeSlot: string, selectedDate: string) => {
+    const [startTime] = timeSlot.split(" - ");
+    
+    // Create current time in UTC+7 (Asia/Jakarta)
+    const now = new Date();
+    const utc7Offset = 7 * 60; // UTC+7 in minutes
+    const nowInUtc7 = new Date(now.getTime() + (utc7Offset * 60 * 1000) + (now.getTimezoneOffset() * 60 * 1000));
+    
+    const slotDate = new Date(selectedDate);
+    const [hours, minutes] = startTime.split(":").map(Number);
+    
+    // Set the slot time on the selected date in UTC+7
+    const slotDateTime = new Date(slotDate);
+    slotDateTime.setHours(hours, minutes, 0, 0);
+    
+    // Check if slot time is in the past
+    return slotDateTime <= nowInUtc7;
+  };
+
+  const getTimeSlotStatus = (timeSlot: string, selectedDate: string) => {
+    const isBooked = isTimeSlotBooked(timeSlot);
+    const isPast = isTimeSlotPast(timeSlot, selectedDate);
+    
+    if (isPast) {
+      return {
+        type: 'past',
+        disabled: true,
+        className: 'opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-800 pointer-events-none',
+        badgeColor: 'bg-gray-400 text-gray-700 dark:bg-gray-700 dark:text-gray-300',
+        textColor: 'text-gray-400',
+        badge: '⏰ Past',
+        message: 'This time slot has already passed.'
+      };
+    } else if (isBooked) {
+      return {
+        type: 'booked',
+        disabled: true,
+        className: 'opacity-80 cursor-not-allowed bg-gradient-to-br from-orange-50 to-amber-100 dark:from-orange-950/30 dark:to-amber-950/30',
+        badgeColor: 'bg-orange-500 text-white',
+        textColor: 'text-orange-600 dark:text-orange-400',
+        badge: '📅 Booked',
+        message: 'This time slot is already booked. Please choose another time.'
+      };
+    } else {
+      return {
+        type: 'available',
+        disabled: false,
+        className: 'hover:shadow-lg hover:ring-2 hover:ring-emerald-200 hover:scale-105 bg-gradient-to-br from-emerald-50/50 to-teal-50/50 dark:from-emerald-950/20 dark:to-teal-950/20',
+        badgeColor: '',
+        textColor: 'text-foreground',
+        badge: null,
+        message: null
+      };
+    }
   };
 
   const formatPrice = (price: number) => {
@@ -596,9 +654,17 @@ export function DatetimePickerV1() {
                 <>
                   <div className="text-center">
                     <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-3">Choose Your Time</h3>
-                    <p className="text-muted-foreground">
-                      Select your preferred start time {loading.slots && <span className="text-emerald-600">(Loading available slots...)</span>}
-                    </p>
+                    <div className="flex items-center justify-center gap-2">
+                      <p className="text-muted-foreground">
+                        Select your preferred start time
+                      </p>
+                      {loading.slots && (
+                        <div className="flex items-center gap-2">
+                          <div className="animate-spin h-4 w-4 border-2 border-emerald-500 border-t-transparent rounded-full"></div>
+                          <span className="text-emerald-600 text-sm font-medium">Checking availability...</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   
                   <FormField
@@ -609,56 +675,66 @@ export function DatetimePickerV1() {
                         <div className="max-w-6xl mx-auto">
                           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
                             {timeOptions.map((timeOption) => {
-                              const isBooked = isTimeSlotBooked(timeOption.value);
+                              const status = getTimeSlotStatus(timeOption.value, form.watch("date"));
                               const isSelected = field.value === timeOption.startTime;
 
                               return (
                                 <Card
                                   key={timeOption.value}
                                   className={cn(
-                                    "cursor-pointer transition-all duration-300 transform hover:-translate-y-1 border-0 shadow-md bg-card/80 dark:bg-slate-800/90 backdrop-blur-sm",
+                                    "cursor-pointer transition-all duration-300 transform hover:-translate-y-1 border-0 shadow-md bg-card/80 dark:bg-slate-800/90 backdrop-blur-sm relative overflow-hidden",
                                     isSelected &&
                                       "ring-2 ring-emerald-500 shadow-xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 scale-105",
-                                    !isBooked &&
+                                    !status.disabled &&
                                       !isSelected &&
-                                      "hover:shadow-lg hover:ring-2 hover:ring-emerald-200",
-                                    isBooked &&
-                                      "opacity-60 cursor-not-allowed bg-gradient-to-br from-red-50 to-rose-100 dark:from-red-950/30 dark:to-rose-950/30 shadow-sm",
+                                      status.className,
+                                    status.disabled &&
+                                      status.className,
                                   )}
                                   onClick={() => {
-                                    if (!isBooked) {
+                                    if (!status.disabled) {
                                       field.onChange(timeOption.startTime);
                                       // Reset end time when start time changes
                                       form.setValue("time_end", "");
                                       // Hide start time selection and show end time selection
                                       setShowStartTimeSelection(false);
                                       setShowEndTimeSelection(true);
+                                    } else if (status.message) {
+                                      toast.error(status.message);
                                     }
                                   }}
                                 >
-                                  <CardContent className="p-4 text-center">
+                                  {/* Diagonal stripes for disabled slots */}
+                                  {status.disabled && status.type !== 'past' && (
+                                    <div className="absolute inset-0 opacity-20">
+                                      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-orange-400 to-transparent transform rotate-45 scale-150"></div>
+                                    </div>
+                                  )}
+                                  
+                                  <CardContent className="p-4 text-center relative z-10">
                                     <div className="flex items-center justify-center gap-2 mb-2">
                                       <Clock className={cn(
                                         "h-4 w-4",
-                                        isSelected ? "text-emerald-600" : isBooked ? "text-red-400" : "text-muted-foreground"
+                                        isSelected ? "text-emerald-600" : status.textColor
                                       )} />
                                       <span className={cn(
                                         "font-bold text-lg",
-                                        isSelected ? "text-emerald-700 dark:text-emerald-400" : isBooked ? "text-red-500" : "text-foreground"
+                                        isSelected ? "text-emerald-700 dark:text-emerald-400" : status.textColor
                                       )}>
                                         {timeOption.display}
                                       </span>
                                     </div>
-                                    {isBooked ? (
-                                      <Badge className="bg-red-500 text-white text-xs border-0 px-2 py-1">
-                                        Unavailable
+                                    {status.badge ? (
+                                      <Badge className={cn("text-xs border-0 px-2 py-1", status.badgeColor)}>
+                                        {status.badge}
                                       </Badge>
                                     ) : isSelected ? (
                                       <Badge className="bg-emerald-500 text-white text-xs border-0 px-2 py-1">
-                                        ✓ Selected
+                                        ✅ Selected
                                       </Badge>
                                     ) : (
-                                      <div className="text-xs text-muted-foreground font-medium">Available</div>
+                                      // No badge for available slots - cleaner look
+                                      <div className="h-6"></div>
                                     )}
                                   </CardContent>
                                 </Card>
@@ -666,6 +742,7 @@ export function DatetimePickerV1() {
                             })}
                           </div>
                         </div>
+                        
                         <FormMessage />
                       </FormItem>
                     )}
@@ -784,54 +861,62 @@ export function DatetimePickerV1() {
                                     : [],
                                 )
                                 .map((timeOption) => {
-                                  const isBooked = isTimeSlotBooked(timeOption.value);
-                                  const isSelected =
-                                    field.value === timeOption.startTime;
+                                  const status = getTimeSlotStatus(timeOption.value, form.watch("date"));
+                                  const isSelected = field.value === timeOption.startTime;
 
                                   return (
                                     <Card
                                       key={timeOption.value}
                                       className={cn(
-                                        "cursor-pointer transition-all duration-300 transform hover:-translate-y-1 border-0 shadow-md bg-card/80 dark:bg-slate-800/90 backdrop-blur-sm",
+                                        "cursor-pointer transition-all duration-300 transform hover:-translate-y-1 border-0 shadow-md bg-card/80 dark:bg-slate-800/90 backdrop-blur-sm relative overflow-hidden",
                                         isSelected &&
                                           "ring-2 ring-emerald-500 shadow-xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 scale-105",
-                                        !isBooked &&
+                                        !status.disabled &&
                                           !isSelected &&
-                                          "hover:shadow-lg hover:ring-2 hover:ring-emerald-200",
-                                        isBooked &&
-                                          "opacity-60 cursor-not-allowed bg-gradient-to-br from-red-50 to-rose-100 dark:from-red-950/30 dark:to-rose-950/30 shadow-sm",
+                                          status.className,
+                                        status.disabled &&
+                                          status.className,
                                       )}
                                       onClick={() => {
-                                        if (!isBooked) {
+                                        if (!status.disabled) {
                                           field.onChange(timeOption.startTime);
                                           // Hide end time selection after selection (better mobile UX)
                                           setShowEndTimeSelection(false);
+                                        } else if (status.message) {
+                                          toast.error(status.message);
                                         }
                                       }}
                                     >
-                                      <CardContent className="p-4 text-center">
+                                      {/* Diagonal stripes for disabled slots */}
+                                      {status.disabled && status.type !== 'past' && (
+                                        <div className="absolute inset-0 opacity-20">
+                                          <div className="absolute inset-0 bg-gradient-to-br from-transparent via-orange-400 to-transparent transform rotate-45 scale-150"></div>
+                                        </div>
+                                      )}
+                                      
+                                      <CardContent className="p-4 text-center relative z-10">
                                         <div className="flex items-center justify-center gap-2 mb-2">
                                           <Clock className={cn(
                                             "h-4 w-4",
-                                            isSelected ? "text-emerald-600" : isBooked ? "text-red-400" : "text-muted-foreground"
+                                            isSelected ? "text-emerald-600" : status.textColor
                                           )} />
                                           <span className={cn(
                                             "font-bold text-lg",
-                                            isSelected ? "text-emerald-700 dark:text-emerald-400" : isBooked ? "text-red-500" : "text-foreground"
+                                            isSelected ? "text-emerald-700 dark:text-emerald-400" : status.textColor
                                           )}>
                                             {timeOption.display}
                                           </span>
                                         </div>
-                                        {isBooked ? (
-                                          <Badge className="bg-red-500 text-white text-xs border-0 px-2 py-1">
-                                            Unavailable
+                                        {status.badge ? (
+                                          <Badge className={cn("text-xs border-0 px-2 py-1", status.badgeColor)}>
+                                            {status.badge}
                                           </Badge>
                                         ) : isSelected ? (
                                           <Badge className="bg-emerald-500 text-white text-xs border-0 px-2 py-1">
-                                            ✓ Selected
+                                            ✅ Selected
                                           </Badge>
                                         ) : (
-                                          <div className="text-xs text-muted-foreground font-medium">Available</div>
+                                          <div className="h-6"></div>
                                         )}
                                       </CardContent>
                                     </Card>
@@ -844,33 +929,7 @@ export function DatetimePickerV1() {
                       )}
                     />
                   </>
-                ) : form.watch("time_end") && !showStartTimeSelection && (
-                  // Show compact selected end time only if start time is also collapsed
-                  <div className="text-center space-y-4">
-                    <div className="max-w-md mx-auto">
-                      <div className="flex flex-col gap-3 p-6 bg-gradient-to-r from-teal-50 to-cyan-50 dark:from-teal-950/30 dark:to-cyan-950/30 rounded-xl border border-teal-200 dark:border-teal-800">
-                        <div className="flex items-center justify-center gap-3 mb-2">
-                          <Clock className="h-5 w-5 text-teal-600" />
-                          <div className="text-center">
-                            <p className="text-sm text-muted-foreground mb-1">End Time Selected</p>
-                            <p className="font-bold text-lg text-teal-700 dark:text-teal-400">{form.watch("time_end")}</p>
-                          </div>
-                        </div>
-                        <div className="flex justify-center">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            className="border-teal-300 text-teal-700 hover:bg-teal-50 dark:border-teal-700 dark:text-teal-400 dark:hover:bg-teal-950/20"
-                            onClick={() => setShowEndTimeSelection(true)}
-                          >
-                            Change
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                ) : null}
               </div>
             )}
 
